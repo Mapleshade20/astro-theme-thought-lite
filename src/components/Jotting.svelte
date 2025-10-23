@@ -82,6 +82,12 @@
 			{/each}
 		</header>
 
+		{#if filtered.length === 0 && tags.length > 0}
+			<div class="flex flex-col items-center justify-center py-20 c-weak">
+				<p class="text-lg">{t('jotting.noMatches')}</p>
+			</div>
+		{/if}
+
 		{#if pages > 1}
 			<footer class="sticky bottom-0 flex items-center justify-center gap-3 mt-a pb-1 c-weak bg-background font-mono">
 				<button onclick={() => (page = Math.max(1, page - 1))}>{@render left()}</button>

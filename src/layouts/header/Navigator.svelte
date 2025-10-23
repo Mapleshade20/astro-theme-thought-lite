@@ -117,7 +117,7 @@
 <div role="button" onclick={() => (menu = false)} class:pointer-events-none={!menu} class:bg-transparent={!menu} class="fixed top-0 left-0 w-screen h-screen pointer-events-auto bg-#aaaaaa88 transition-background-color sm:hidden"></div>
 
 <nav bind:this={navigator} class:transform-translate-x-full={!menu} class="fixed top-0 right-0 flex flex-col justify-between items-start gap-5 p-5 bg-background h-full sm:contents overflow-hidden transition-transform">
-	<header class="grid gap-5 c-secondary grid-rows-[repeat(5,1fr)] sm:(grid-rows-none grid-cols-[repeat(4,1fr)])">
+	<header class="grid gap-5 c-secondary grid-rows-[repeat(6,1fr)] sm:(grid-rows-none grid-cols-[repeat(5,1fr)])">
 		<button onclick={() => (menu = false)} class="sm:hidden">{@render close()}</button>
 
 		<a href={getRelativeLocaleUrl(locale)} class:location={route == getRelativeLocaleUrl(locale) || route.startsWith(getRelativeLocaleUrl(locale, "/preface"))}>
@@ -131,6 +131,10 @@
 		<a href={getRelativeLocaleUrl(locale, "/jotting")} class:location={route.startsWith(getRelativeLocaleUrl(locale, "/jotting"))}>
 			<span>{@render jotting()}</span>
 			<p>{t("navigation.jotting")}</p>
+		</a>
+		<a href={getRelativeLocaleUrl(locale, "/library")} class:location={route.startsWith(getRelativeLocaleUrl(locale, "/library"))}>
+			<span>{@render library()}</span>
+			<p>{t("navigation.library")}</p>
 		</a>
 		<a href={getRelativeLocaleUrl(locale, "/about")} class:location={route.startsWith(getRelativeLocaleUrl(locale, "/about"))}>
 			<span>{@render about()}</span>
@@ -164,7 +168,7 @@
 	import ThemeSwitcher from "./ThemeSwitcher.svelte";
 	import Menu from "./Menu.svelte";
 
-	let { locale, route, home, note, jotting, about, globe, rss, sun, moon, bars, close }: { locale: string; route: string } & { [key: string]: Snippet } = $props();
+	let { locale, route, home, note, jotting, library, about, globe, rss, sun, moon, bars, close }: { locale: string; route: string } & { [key: string]: Snippet } = $props();
 
 	const t = i18nit(locale);
 

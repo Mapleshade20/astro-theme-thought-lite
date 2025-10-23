@@ -60,4 +60,33 @@ const information = defineCollection({
 	loader: glob({ pattern: "**/*.(md|yaml)", base: "./src/content/information" })
 });
 
-export const collections = { note, jotting, preface, information };
+/**
+ * Knowledge collection configuration
+ * Represents structured learning materials (books, video series, courses)
+ * with progress tracking and reading notes
+ */
+const knowledge = defineCollection({
+	// Load all markdown files except those starting with underscore (private/draft files)
+	loader: glob({ pattern: ["**/*.md", "!**/_*.md", "!**/_*/*.md"], base: "./src/content/knowledge" }),
+	schema: z.object({
+		title: z.string(),									// Title of the book/series/course (required)
+		cover: z.string().optional(),						// Cover image URL or path
+		type: z.enum(['book', 'video_series', 'course']),	// Type of learning material
+		status: z.enum(['todo', 'in_progress', 'done']).default('todo'),	// Reading/watching status
+		totalPages: z.number().int().positive().optional(),	// Total pages/episodes (optional for non-paginated content)
+		currentPage: z.number().int().nonnegative().default(0),	// Current page/episode (default 0)
+		dates: z.object({
+			start: z.date().optional(),						// Start date
+			finish: z.date().optional()						// Completion date
+		}).optional(),
+		lastEdited: z.date().optional(),					// Last edited date for activity tracking
+		showInFeed: z.boolean().default(false),				// Whether to show in main blog timeline
+		tags: z.array(z.string()).optional(),				// Tags for categorization
+		description: z.string().optional(),					// Brief description or notes
+		author: z.string().optional(),						// Author/creator of the material
+		sensitive: z.boolean().default(false),				// Marks content as sensitive
+		draft: z.boolean().default(false)					// Draft status
+	})
+});
+
+export const collections = { note, jotting, preface, information, knowledge };

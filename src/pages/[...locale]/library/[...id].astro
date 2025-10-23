@@ -1,0 +1,142 @@
+---
+import { i18n } from "astro:config/client";
+import { getCollection, render } from "astro:content";
+import Time from "$utils/time";
+import Base from "$layouts/Base.astro";
+import Icon from "$components/Icon.astro";
+import Position from "$components/Position.astro";
+import Sensitive from "$components/Sensitive.svelte";
+import ProgressRing from "$components/ProgressRing.svelte";
+import i18nit from "$i18n";
+import siteConfig from "site.config.json";
+
+export async function getStaticPaths() {
+	// Get all knowledge items excluding drafts
+	const knowledge = await getCollection("knowledge", item => !item.data.draft);
+
+	return knowledge.map(item => {
+		// Extract language and item ID from file path structure
+		const [language, ...id] = item.id.split("/");
+
+		// Generate path params with optional locale (omit for default locale)
+		return { params: { locale: language == i18n?.defaultLocale ? undefined : language, id: id.join("/") }, props: { item } };
+	});
+}
+
+const { locale = i18n!.defaultLocale } = Astro.params;
+const { item } = Astro.props;
+
+// Render markdown content and extract frontmatter
+const { Content, remarkPluginFrontmatter: frontmatter } = await render(item);
+
+const t = i18nit(locale);
+
+// Calculate progress percentage from totalPages and currentPage
+const progress = item.data.totalPages && item.data.totalPages > 0
+	? Math.round((item.data.currentPage / item.data.totalPages) * 100)
+	: 0;
+
+// Get theme from site config
+const theme = siteConfig.library?.progressRingTheme || 'default';
+
+// Determine type icon and label
+const typeConfig = {
+	book: { icon: "lucide:book-open", label: t("library.type.book") },
+	video_series: { icon: "lucide:video", label: t("library.type.video_series") },
+	course: { icon: "lucide:graduation-cap", label: t("library.type.course") }
+};
+
+const typeInfo = typeConfig[item.data.type];
+
+// Status label
+const statusLabel = {
+	todo: t("library.status.todo"),
+	in_progress: t("library.status.in_progress"),
+	done: t("library.status.done")
+};
+---
+
+<Base title={item.data.title} {locale} description={item.data.description} article={item.data.dates?.start ? { timestamp: item.data.dates.start, tags: item.data.tags } : undefined}>
+	<main class="flex flex-col gap-6">
+		<header class="flex flex-col gap-4">
+			<!-- Title section with progress ring -->
+			<div class="flex items-start gap-4">
+				<div class="flex-shrink-0">
+					<ProgressRing client:load status={item.data.status} progress={progress} size={100} theme={theme}>
+						{
+							item.data.cover ? (
+								<img src={item.data.cover} alt={item.data.title} class="w-full h-full object-cover" />
+							) : (
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									<Icon name={typeInfo.icon} size={40} />
+								</div>
+							)
+						}
+					</ProgressRing>
+				</div>
+
+				<div class="flex flex-col gap-2 flex-grow">
+					<h1 class="text-3xl">{item.data.title}</h1>
+					{item.data.author && <p class="text-lg c-remark">{item.data.author}</p>}
+				</div>
+			</div>
+
+			<!-- Metadata section -->
+			<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap children:(flex items-center gap-1 text-3.5 c-secondary)">
+				<span>
+					<Icon name={typeInfo.icon} />
+					{typeInfo.label}
+				</span>
+				<span>
+					<Icon name="lucide:activity" />
+					{statusLabel[item.data.status]}
+					{progress > 0 && `(${progress}%)`}
+				</span>
+				{
+					item.data.dates?.start && (
+						<time title={Time.date(item.data.dates.start)}>
+							<Icon name="lucide:calendar-arrow-down" />
+							{Time.date(item.data.dates.start)}
+						</time>
+					)
+				}
+				{
+					item.data.dates?.finish && (
+						<time title={Time.date(item.data.dates.finish)}>
+							<Icon name="lucide:calendar-check" />
+							{Time.date(item.data.dates.finish)}
+						</time>
+					)
+				}
+				{
+					item.data.tags?.length && (
+						<span>
+							<Icon name="lucide:hash" />
+							{item.data.tags?.join("; ")}
+						</span>
+					)
+				}
+				{
+					frontmatter.words && (
+						<span>
+							<Icon name="lucide:pilcrow" />
+							{t("read.words", { words: frontmatter.words })}
+						</span>
+					)
+				}
+			</div>
+
+			{item.data.description && <p class="text-base c-remark border-l-2 border-l-solid border-l-primary pl-3">{item.data.description}</p>}
+
+			<hr class="b-b b-b-solid b-weak" />
+		</header>
+
+		<Sensitive {locale} back="/library" sensitive={item.data.sensitive} client:load>
+			<section id="markdown-content" class="markdown">
+				<Content />
+			</section>
+		</Sensitive>
+
+		<Position {locale} />
+	</main>
+</Base>

@@ -136,7 +136,10 @@ export default defineConfig({
           "arrow-right",
           "arrow-up-to-line",
           "at-sign",
+          "book-open",
           "calendar",
+          "calendar-arrow-down",
+          "calendar-check",
           "circle-alert",
           "circle-check",
           "circle-question-mark",
@@ -149,6 +152,7 @@ export default defineConfig({
           "feather",
           "file-search",
           "flag-triangle-right",
+          "graduation-cap",
           "hash",
           "history",
           "house",
@@ -177,6 +181,7 @@ export default defineConfig({
           "user-round",
           "user-round-pen",
           "user-round-x",
+          "video",
           "x"
         ],
         "simple-icons": [
