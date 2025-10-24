@@ -122,20 +122,25 @@
 					border-radius: 0.375rem;
 					overflow: hidden;
 
-					img {
+					.cover-image {
 						width: 100%;
 						height: 100%;
-						object-fit: cover;
-					}
+						background-size: cover;
+						background-position: center;
+						background-repeat: no-repeat;
 
-					.placeholder {
-						width: 100%;
-						height: 100%;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						background-color: var(--background-color);
-						color: var(--weak-color);
+						&:not(.has-cover) {
+							background-color: var(--background-color);
+						}
+
+						.placeholder {
+							width: 100%;
+							height: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							color: var(--weak-color);
+						}
 					}
 				}
 
@@ -188,19 +193,15 @@
 								size={100}
 								theme={theme}
 							>
-								{#if book.data.cover}
-									<img src={book.data.cover} alt={book.data.title} class="w-full h-full object-cover" />
-								{:else}
-									<div class="w-full h-full flex items-center justify-center c-weak">
-										{#if book.data.type === 'book' && icons['icon-book']}
-											{@render icons['icon-book']()}
-										{:else if book.data.type === 'video_series' && icons['icon-video_series']}
-											{@render icons['icon-video_series']()}
-										{:else if book.data.type === 'course' && icons['icon-course']}
-											{@render icons['icon-course']()}
-										{/if}
-									</div>
-								{/if}
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === 'book' && icons['icon-book']}
+										{@render icons['icon-book']()}
+									{:else if book.data.type === 'video_series' && icons['icon-video_series']}
+										{@render icons['icon-video_series']()}
+									{:else if book.data.type === 'course' && icons['icon-course']}
+										{@render icons['icon-course']()}
+									{/if}
+								</div>
 							</ProgressRing>
 							<div class="book-info">
 								<div class="book-title">{book.data.title}</div>
@@ -232,19 +233,15 @@
 								size={100}
 								theme={theme}
 							>
-								{#if book.data.cover}
-									<img src={book.data.cover} alt={book.data.title} class="w-full h-full object-cover" />
-								{:else}
-									<div class="w-full h-full flex items-center justify-center c-weak">
-										{#if book.data.type === 'book' && icons['icon-book']}
-											{@render icons['icon-book']()}
-										{:else if book.data.type === 'video_series' && icons['icon-video_series']}
-											{@render icons['icon-video_series']()}
-										{:else if book.data.type === 'course' && icons['icon-course']}
-											{@render icons['icon-course']()}
-										{/if}
-									</div>
-								{/if}
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === 'book' && icons['icon-book']}
+										{@render icons['icon-book']()}
+									{:else if book.data.type === 'video_series' && icons['icon-video_series']}
+										{@render icons['icon-video_series']()}
+									{:else if book.data.type === 'course' && icons['icon-course']}
+										{@render icons['icon-course']()}
+									{/if}
+								</div>
 							</ProgressRing>
 							<div class="book-info">
 								<div class="book-title">{book.data.title}</div>
@@ -276,19 +273,15 @@
 								size={100}
 								theme={theme}
 							>
-								{#if book.data.cover}
-									<img src={book.data.cover} alt={book.data.title} class="w-full h-full object-cover" />
-								{:else}
-									<div class="w-full h-full flex items-center justify-center c-weak">
-										{#if book.data.type === 'book' && icons['icon-book']}
-											{@render icons['icon-book']()}
-										{:else if book.data.type === 'video_series' && icons['icon-video_series']}
-											{@render icons['icon-video_series']()}
-										{:else if book.data.type === 'course' && icons['icon-course']}
-											{@render icons['icon-course']()}
-										{/if}
-									</div>
-								{/if}
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === 'book' && icons['icon-book']}
+										{@render icons['icon-book']()}
+									{:else if book.data.type === 'video_series' && icons['icon-video_series']}
+										{@render icons['icon-video_series']()}
+									{:else if book.data.type === 'course' && icons['icon-course']}
+										{@render icons['icon-course']()}
+									{/if}
+								</div>
 							</ProgressRing>
 							<div class="book-info">
 								<div class="book-title">{book.data.title}</div>
@@ -337,19 +330,25 @@
 				<h3>{hoveredBook ? t('library.thisReadingSession') : t('library.latestActivity')}</h3>
 				<div class="activity-card">
 					<div class="activity-cover">
-						{#if displayBook.data.cover}
-							<img src={displayBook.data.cover} alt={displayBook.data.title} />
-						{:else}
-							<div class="placeholder">
-								{#if displayBook.data.type === 'book' && icons['icon-book-large']}
-									{@render icons['icon-book-large']()}
-								{:else if displayBook.data.type === 'video_series' && icons['icon-video_series-large']}
-									{@render icons['icon-video_series-large']()}
-								{:else if displayBook.data.type === 'course' && icons['icon-course-large']}
-									{@render icons['icon-course-large']()}
-								{/if}
-							</div>
-						{/if}
+						<div
+							class="cover-image"
+							class:has-cover={displayBook.data.cover}
+							style={displayBook.data.cover ? `background-image: url('${displayBook.data.cover}')` : ''}
+							role="img"
+							aria-label={displayBook.data.title}
+						>
+							{#if !displayBook.data.cover}
+								<div class="placeholder">
+									{#if displayBook.data.type === 'book' && icons['icon-book-large']}
+										{@render icons['icon-book-large']()}
+									{:else if displayBook.data.type === 'video_series' && icons['icon-video_series-large']}
+										{@render icons['icon-video_series-large']()}
+									{:else if displayBook.data.type === 'course' && icons['icon-course-large']}
+										{@render icons['icon-course-large']()}
+									{/if}
+								</div>
+							{/if}
+						</div>
 					</div>
 					<div class="activity-info">
 						<div class="activity-title">{displayBook.data.title}</div>

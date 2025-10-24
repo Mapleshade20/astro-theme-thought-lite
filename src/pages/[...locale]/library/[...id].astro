@@ -9,6 +9,7 @@ import Sensitive from "$components/Sensitive.svelte";
 import ProgressRing from "$components/ProgressRing.svelte";
 import i18nit from "$i18n";
 import siteConfig from "site.config.json";
+import { getImage } from "astro:assets";
 
 export async function getStaticPaths() {
 	// Get all knowledge items excluding drafts
@@ -35,6 +36,25 @@ const t = i18nit(locale);
 const progress = item.data.totalPages && item.data.totalPages > 0
 	? Math.round((item.data.currentPage / item.data.totalPages) * 100)
 	: 0;
+
+// Resolve cover image path
+let coverSrc = item.data.cover;
+if (coverSrc && !coverSrc.startsWith('http://') && !coverSrc.startsWith('https://') && !coverSrc.startsWith('/')) {
+	// Local relative path - need to import it
+	try {
+		const images = import.meta.glob('/src/content/knowledge/**/*.{jpg,jpeg,png,webp,gif}', { eager: true, import: 'default' });
+		// For folder/index.md structure, the ID is just "folder", so append trailing slash
+		const imagePath = `/src/content/knowledge/${item.id}/${coverSrc}`;
+		const imageModule = images[imagePath];
+		if (imageModule) {
+			// Use getImage() to optimize the image
+			const optimizedImage = await getImage({ src: imageModule });
+			coverSrc = optimizedImage.src;
+		}
+	} catch (error) {
+		console.warn(`Failed to resolve cover image for ${item.id}:`, error);
+	}
+}
 
 // Get theme from site config
 const theme = siteConfig.library?.progressRingTheme || 'default';
@@ -63,15 +83,9 @@ const statusLabel = {
 			<div class="flex items-start gap-4">
 				<div class="flex-shrink-0">
 					<ProgressRing client:load status={item.data.status} progress={progress} size={100} theme={theme}>
-						{
-							item.data.cover ? (
-								<img src={item.data.cover} alt={item.data.title} class="w-full h-full object-cover" />
-							) : (
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									<Icon name={typeInfo.icon} size={40} />
-								</div>
-							)
-						}
+						<div class="w-full h-full flex items-center justify-center c-weak">
+							<Icon name={typeInfo.icon} size={40} />
+						</div>
 					</ProgressRing>
 				</div>
 
@@ -79,6 +93,17 @@ const statusLabel = {
 					<h1 class="text-3xl">{item.data.title}</h1>
 					{item.data.author && <p class="text-lg c-remark">{item.data.author}</p>}
 				</div>
+
+				{coverSrc && (
+					<div class="flex-shrink-0 hidden sm:block">
+						<div
+							class="h-25 w-auto aspect-[3/4] rounded-lg shadow-md"
+							style={`background-image: url('${coverSrc}'); background-size: cover; background-position: center; background-repeat: no-repeat;`}
+							role="img"
+							aria-label={item.data.title}
+						></div>
+					</div>
+				)}
 			</div>
 
 			<!-- Metadata section -->

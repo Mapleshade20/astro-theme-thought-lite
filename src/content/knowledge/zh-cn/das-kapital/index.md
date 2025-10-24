@@ -5,6 +5,7 @@ status: in_progress
 totalPages: 2500
 currentPage: 875
 author: 卡尔·马克思
+cover: cover.jpg
 tags:
   - 政治经济学
   - 哲学

@@ -5,6 +5,7 @@ status: done
 totalPages: 96
 currentPage: 96
 author: Antoine de Saint-Exupéry
+cover: https://upload.wikimedia.org/wikipedia/en/0/05/Littleprince.JPG
 tags:
   - fiction
   - philosophy

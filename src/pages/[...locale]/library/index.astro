@@ -7,6 +7,7 @@ import i18nit from "$i18n";
 import { extractExcerpt } from "$utils/excerpt";
 import siteConfig from "site.config.json";
 import { Icon } from "astro-icon/components";
+import { getImage } from "astro:assets";
 
 export async function getStaticPaths() {
 	// Create path for each locale, omitting default locale from URL
@@ -28,8 +29,8 @@ const knowledge = await getCollection("knowledge", item => {
 	return published && localed;
 });
 
-// Process knowledge items: calculate progress, extract excerpts, determine latest date
-const processedKnowledge = knowledge.map(item => {
+// Process knowledge items: calculate progress, extract excerpts, determine latest date, resolve cover images
+const processedKnowledge = await Promise.all(knowledge.map(async item => {
 	// Calculate progress percentage from totalPages and currentPage
 	const progress = item.data.totalPages && item.data.totalPages > 0
 		? Math.round((item.data.currentPage / item.data.totalPages) * 100)
@@ -45,13 +46,36 @@ const processedKnowledge = knowledge.map(item => {
 		|| item.data.dates?.start
 		|| null;
 
+	// Resolve cover image path
+	let coverSrc = item.data.cover;
+	if (coverSrc && !coverSrc.startsWith('http://') && !coverSrc.startsWith('https://') && !coverSrc.startsWith('/')) {
+		// Local relative path - need to import it
+		try {
+			const images = import.meta.glob('/src/content/knowledge/**/*.{jpg,jpeg,png,webp,gif}', { eager: true, import: 'default' });
+			// For folder/index.md structure, the ID is just "folder", so append trailing slash
+			const imagePath = `/src/content/knowledge/${item.id}/${coverSrc}`;
+			const imageModule = images[imagePath];
+			if (imageModule) {
+				// Use getImage() to optimize the image
+				const optimizedImage = await getImage({ src: imageModule });
+				coverSrc = optimizedImage.src;
+			}
+		} catch (error) {
+			console.warn(`Failed to resolve cover image for ${item.id}:`, error);
+		}
+	}
+
 	return {
 		...item,
+		data: {
+			...item.data,
+			cover: coverSrc
+		},
 		progress,
 		excerpt,
 		latestDate
 	};
-});
+}));
 
 // Extract all unique tags from the filtered knowledge items
 const allTags = Array.from(
