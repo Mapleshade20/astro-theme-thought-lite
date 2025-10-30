@@ -95,8 +95,22 @@ const jottings = await getCollection("jotting", jotting => {
 // Calculate total word count across all jottings
 const jotting_words = (await Promise.all(jottings.map(async jotting => (await render(jotting)).remarkPluginFrontmatter.words))).reduce((summary, words) => summary + words, 0);
 
+const knowledge = await getCollection("knowledge", item => {
+	// Extract language from the file path structure
+	const [language] = item.id.split("/");
+
+	// Filter criteria: must be published and match locale
+	let published = !item.data.draft;
+	let localed = language == locale;
+
+	return published && localed;
+});
+
+// Calculate total word count across all knowledge entries
+const knowledge_words = (await Promise.all(knowledge.map(async item => (await render(item)).remarkPluginFrontmatter.words))).reduce((summary, words) => summary + words, 0);
+
 // Aggregate total word count
-const total_words = note_words + jotting_words;
+const total_words = note_words + jotting_words + knowledge_words;
 
 // Check if policy file exists for current locale
 const policy = await getEntry("information", `${locale}/policy`);

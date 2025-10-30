@@ -85,6 +85,7 @@ const knowledge = defineCollection({
 		description: z.string().optional(),					// Brief description or notes
 		author: z.string().optional(),						// Author/creator of the material
 		sensitive: z.boolean().default(false),				// Marks content as sensitive
+		toc: z.boolean().default(false),					// Whether to show table of contents
 		draft: z.boolean().default(false)					// Draft status
 	})
 });

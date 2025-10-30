@@ -1,9 +1,11 @@
 ---
+import type { MarkdownHeading } from "astro";
 import { i18n } from "astro:config/client";
 import { getCollection, render } from "astro:content";
 import Time from "$utils/time";
 import Base from "$layouts/Base.astro";
 import Icon from "$components/Icon.astro";
+import TOC from "$components/note/TOC.astro";
 import Position from "$components/Position.astro";
 import Sensitive from "$components/Sensitive.svelte";
 import ProgressRing from "$components/ProgressRing.svelte";
@@ -27,8 +29,29 @@ export async function getStaticPaths() {
 const { locale = i18n!.defaultLocale } = Astro.params;
 const { item } = Astro.props;
 
-// Render markdown content and extract frontmatter
-const { Content, remarkPluginFrontmatter: frontmatter } = await render(item);
+// Render markdown content and extract headings for TOC
+const { Content, headings, remarkPluginFrontmatter: frontmatter } = await render(item);
+
+// Build hierarchical table of contents from flat heading list
+type Heading = MarkdownHeading & { subheadings: Heading[] };
+const table_of_contents: Heading[] = [];
+const stack: Heading[] = [];
+for (const headingItem of headings) {
+	// Pop headings from stack that are at same or deeper level
+	while (stack[stack.length - 1]?.depth >= headingItem.depth) stack.pop();
+	const heading: Heading = { ...headingItem, subheadings: [] };
+
+	if (stack.length > 0) {
+		// Add as subheading to current parent
+		const parent = stack[stack.length - 1];
+		parent.subheadings.push(heading);
+	} else {
+		// Add as top-level heading
+		table_of_contents.push(heading);
+	}
+
+	stack.push(heading);
+}
 
 const t = i18nit(locale);
 
@@ -157,9 +180,21 @@ const statusLabel = {
 		</header>
 
 		<Sensitive {locale} back="/library" sensitive={item.data.sensitive} client:load>
-			<section id="markdown-content" class="markdown">
-				<Content />
-			</section>
+			<div class="flex gap-5">
+				<section id="markdown-content" class="markdown"><Content /></section>
+				{
+					item.data.toc && (
+						<aside class="hidden sm:(block flex-shrink-0 w-200px)">
+							<div class="sticky top-3 flex flex-col gap-2">
+								<h3>{t("note.contents")}</h3>
+								<nav class="overflow-y-auto">
+									<TOC headings={table_of_contents} />
+								</nav>
+							</div>
+						</aside>
+					)
+				}
+			</div>
 		</Sensitive>
 
 		<Position {locale} />
