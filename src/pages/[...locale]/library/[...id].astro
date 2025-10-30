@@ -144,7 +144,7 @@ const statusLabel = {
 					item.data.dates?.start && (
 						<time title={Time.date(item.data.dates.start)}>
 							<Icon name="lucide:calendar-arrow-down" />
-							{Time.date(item.data.dates.start)}
+							{t("library.dates.startedOn")} {Time.date(item.data.dates.start)}
 						</time>
 					)
 				}
@@ -152,9 +152,25 @@ const statusLabel = {
 					item.data.dates?.finish && (
 						<time title={Time.date(item.data.dates.finish)}>
 							<Icon name="lucide:calendar-check" />
-							{Time.date(item.data.dates.finish)}
+							{t("library.dates.finishedOn")} {Time.date(item.data.dates.finish)}
 						</time>
 					)
+				}
+				{
+					item.data.dates?.lastEdited && (() => {
+						const agoData = Time.ago(item.data.dates.lastEdited);
+						// Use plural form when count > 1
+						let unit = agoData.unit;
+						if (unit !== 'today' && agoData.count > 1) {
+							unit = `${agoData.unit}s`;
+						}
+						return (
+							<time title={Time.date(item.data.dates.lastEdited)}>
+								<Icon name="lucide:clock" />
+								{t("library.dates.lastEdited")} {t(`library.dates.ago.${unit}`, { count: agoData.count })}
+							</time>
+						);
+					})()
 				}
 				{
 					item.data.tags?.length && (

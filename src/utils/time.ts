@@ -145,6 +145,34 @@ namespace Time {
 
 		return Math.floor(day_1.diff(day_2, "days").days);
 	}
+
+	/**
+	 * Calculate relative time difference from a past date to now
+	 * Returns an object with the unit and count for use with i18n
+	 * @param time - Date object or timestamp to calculate from
+	 * @param timezone - Timezone string (defaults to configured default timezone)
+	 * @returns Object with unit ('year'|'month'|'day'|'today') and count
+	 */
+	export function ago(time: Date | number, timezone: string = default_timezone): { unit: 'year' | 'years' | 'month' | 'months' | 'day' | 'days' | 'today', count: number } {
+		const dt = datetime(time, timezone);
+		const now = DateTime.now().setZone(timezone);
+		const diff = now.diff(dt, ['years', 'months', 'days']).toObject();
+
+		// Return based on the largest unit
+		if (diff.years && diff.years >= 1) {
+			const years = Math.floor(diff.years);
+			return { unit: 'year', count: years };
+		} else if (diff.months && diff.months >= 1) {
+			const months = Math.floor(diff.months);
+			return { unit: 'month', count: months };
+		} else if (diff.days && diff.days >= 1) {
+			const days = Math.floor(diff.days);
+			return { unit: 'day', count: days };
+		} else {
+			// Less than a day
+			return { unit: 'today', count: 0 };
+		}
+	}
 }
 
 export default Time;

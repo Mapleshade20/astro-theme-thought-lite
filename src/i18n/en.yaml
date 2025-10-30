@@ -30,6 +30,18 @@ library:
   latestActivity: Latest
   thisReadingSession: Current
   noExcerpt: No notes available yet
+  dates:
+    lastEdited: Last edited
+    startedOn: Started on
+    finishedOn: Finished on
+    ago:
+      year: '{count} year ago'
+      years: '{count} years ago'
+      month: '{count} month ago'
+      months: '{count} months ago'
+      day: '{count} day ago'
+      days: '{count} days ago'
+      today: today
   status:
     done: Completed
     in_progress: Reading

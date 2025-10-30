@@ -13,7 +13,7 @@ description: A poetic tale about love, friendship, and the meaning of life.
 dates:
   start: 2025-01-15
   finish: 2025-01-20
-lastEdited: 2025-01-20
+  lastEdited: 2025-01-20
 ---
 
 # Reading Notes: The Little Prince

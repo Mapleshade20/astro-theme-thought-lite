@@ -10,7 +10,8 @@ tags:
   - 视频
   - 思想史
 description: 未明子制作的系列视频，系统性地介绍各种思想流派和主义。
-lastEdited: 2025-01-18
+dates:
+  lastEdited: 2024-01-18
 ---
 
 # 观看计划：主义主义系列

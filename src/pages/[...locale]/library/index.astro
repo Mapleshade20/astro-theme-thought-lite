@@ -40,8 +40,8 @@ const processedKnowledge = await Promise.all(knowledge.map(async item => {
 	const excerptLength = siteConfig.library?.excerptLength || 150;
 	const excerpt = extractExcerpt(item.body, excerptLength);
 
-	// Determine latest date (lastEdited > dates.finish > dates.start)
-	const latestDate = item.data.lastEdited
+	// Determine latest date (dates.lastEdited > dates.finish > dates.start)
+	const latestDate = item.data.dates?.lastEdited
 		|| item.data.dates?.finish
 		|| item.data.dates?.start
 		|| null;

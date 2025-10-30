@@ -77,9 +77,9 @@ const knowledge = defineCollection({
 		currentPage: z.number().int().nonnegative().default(0),	// Current page/episode (default 0)
 		dates: z.object({
 			start: z.date().optional(),						// Start date
-			finish: z.date().optional()						// Completion date
+			finish: z.date().optional(),					// Completion date
+			lastEdited: z.date().optional()					// Last edited date for activity tracking
 		}).optional(),
-		lastEdited: z.date().optional(),					// Last edited date for activity tracking
 		showInFeed: z.boolean().default(false),				// Whether to show in main blog timeline
 		tags: z.array(z.string()).optional(),				// Tags for categorization
 		description: z.string().optional(),					// Brief description or notes

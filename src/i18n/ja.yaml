@@ -28,6 +28,18 @@ library:
   latestActivity: 最新読書記録
   thisReadingSession: 今回の読書記録
   noExcerpt: まだノートがありません
+  dates:
+    lastEdited: 最終編集
+    startedOn: 開始日
+    finishedOn: 完了日
+    ago:
+      year: '{count} 年前'
+      years: '{count} 年前'
+      month: '{count} ヶ月前'
+      months: '{count} ヶ月前'
+      day: '{count} 日前'
+      days: '{count} 日前'
+      today: 今日
   status:
     done: 読了
     in_progress: 読書中

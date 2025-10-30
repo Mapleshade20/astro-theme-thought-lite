@@ -12,7 +12,7 @@ description: 未明子制作的系列视频，阐述他对实践的认识。
 dates:
   start: 2025-01-10
   finish: 2025-01-20
-lastEdited: 2025-01-20
+  lastEdited: 2025-01-20
 ---
 
 # 观看：实践学
