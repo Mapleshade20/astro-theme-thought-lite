@@ -18,5 +18,9 @@
 	"library": {
 		"progressRingTheme": "minimal",
 		"excerptLength": 160
+	},
+	"home": {
+		"showNewestJotting": true,
+		"showReadingBooks": true
 	}
 }
