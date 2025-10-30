@@ -14,5 +14,9 @@
 	"feed": {
 		"section": "*",
 		"limit": 20
+	},
+	"library": {
+		"progressRingTheme": "default",
+		"excerptLength": 150
 	}
 }
