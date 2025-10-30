@@ -394,7 +394,7 @@
 		locale,
 		books,
 		allTags,
-		theme = 'default',
+		theme = 'plain',
 		...icons
 	}: {
 		locale: string;

@@ -34,20 +34,6 @@
 	--serif: "Noto Serif SC", serif;
 	--monospace: "Maple Mono NF CN", monospace;
 	--swup-fade-theme-duration: .15s;
-
-	// ProgressRing: Light theme todo colors (higher opacity for visibility on white background)
-	--todo-ring-opacity: 0.45;
-	--todo-ring-opacity-breathe-min: 0.25;
-	--todo-ring-opacity-breathe-max: 0.6;
-	--todo-icon-brightness: brightness(1);
-	--todo-icon-brightness-min: brightness(0.85);
-	--todo-icon-brightness-max: brightness(1.15);
-
-	// ProgressRing: Light theme done colors (darker, more saturated for contrast)
-	--done-color-1: #b8a800; // darker yellow
-	--done-color-2: #d84670; // darker pink
-	--done-color-3: #3d7379; // darker teal-blue
-	--done-color-4: #6b6b6b; // dark gray
 }
 
 :lang(zh-hk),
@@ -70,20 +56,6 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		.dark-theme();
-
-		// ProgressRing: Dark theme todo colors (lower opacity for subtlety on dark background)
-		--todo-ring-opacity: 0.25;
-		--todo-ring-opacity-breathe-min: 0.1;
-		--todo-ring-opacity-breathe-max: 0.35;
-		--todo-icon-brightness: brightness(0.5);
-		--todo-icon-brightness-min: brightness(0.25);
-		--todo-icon-brightness-max: brightness(0.6);
-
-		// ProgressRing: Dark theme done colors (bright colors for visibility)
-		--done-color-1: #e8e358; // bright yellow
-		--done-color-2: #f9a9b6; // bright pink
-		--done-color-3: #60959a; // bright blue
-		--done-color-4: #bbbbbb; // white
 	}
 
 	.code-dark();
@@ -91,39 +63,11 @@
 
 [data-theme="light"] {
 	.light-theme();
-
-	// ProgressRing: Light theme todo colors
-	--todo-ring-opacity: 0.45;
-	--todo-ring-opacity-breathe-min: 0.25;
-	--todo-ring-opacity-breathe-max: 0.6;
-	--todo-icon-brightness: brightness(1);
-	--todo-icon-brightness-min: brightness(0.85);
-	--todo-icon-brightness-max: brightness(1.15);
-
-	// ProgressRing: Light theme done colors
-	--done-color-1: #b8a800; // darker yellow
-	--done-color-2: #d84670; // darker pink
-	--done-color-3: #3d7379; // darker teal-blue
-	--done-color-4: #6b6b6b; // dark gray
 }
 
 [data-theme="dark"] {
 	.dark-theme();
 	.code-dark();
-
-	// ProgressRing: Dark theme todo colors
-	--todo-ring-opacity: 0.25;
-	--todo-ring-opacity-breathe-min: 0.1;
-	--todo-ring-opacity-breathe-max: 0.35;
-	--todo-icon-brightness: brightness(0.5);
-	--todo-icon-brightness-min: brightness(0.25);
-	--todo-icon-brightness-max: brightness(0.6);
-
-	// ProgressRing: Dark theme done colors
-	--done-color-1: #e8e358; // bright yellow
-	--done-color-2: #f9a9b6; // bright pink
-	--done-color-3: #60959a; // bright blue
-	--done-color-4: #bbbbbb; // white
 }
 
 * {
@@ -296,3 +240,6 @@ svg {
 [data-theme="dark"]::view-transition-new(root) {
 	z-index: 1;
 }
+
+// Import ProgressRing themes
+@import './progress-ring/index.less';
