@@ -5,10 +5,7 @@ status: todo
 totalPages: 256
 currentPage: 0
 author: 未明子
-tags:
-  - 哲学
-  - 视频
-  - 思想史
+tags: [哲学, 未明子, 思想史]
 description: 未明子制作的系列视频，系统性地介绍各种思想流派和主义。
 dates:
   lastEdited: 2024-01-18

@@ -6,10 +6,7 @@ totalPages: 2500
 currentPage: 875
 author: 卡尔·马克思
 cover: cover.jpg
-tags:
-  - 政治经济学
-  - 哲学
-  - 经典
+tags: [政治经济学, 经典]
 description: 马克思主义政治经济学的经典著作，深入分析资本主义生产方式。
 toc: true
 dates:

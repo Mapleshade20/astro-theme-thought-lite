@@ -7,6 +7,9 @@
  * @returns Excerpt string with ellipsis if truncated
  */
 export function extractExcerpt(content: string, length: number = 150): string {
+	// Handle undefined or null content
+	if (!content) return '';
+
 	// Remove frontmatter if present
 	let cleaned = content.replace(/^---[\s\S]*?---\s*/m, '');
 
@@ -30,6 +33,9 @@ export function extractExcerpt(content: string, length: number = 150): string {
 
 	// Remove images (e.g., ![alt](url))
 	cleaned = cleaned.replace(/!\[([^\]]*)\]\([^)]+\)/g, '');
+
+	// Remove all HTML tags (both paired and self-closing)
+	cleaned = cleaned.replace(/<[^>]+>/g, '');
 
 	// Trim whitespace
 	const trimmed = cleaned.trim();

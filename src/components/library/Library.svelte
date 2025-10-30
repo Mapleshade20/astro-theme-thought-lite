@@ -166,6 +166,9 @@
 						color: var(--remark-color);
 						font-size: 0.875rem;
 						line-height: 1.6;
+						overflow: hidden;
+						max-width: 100%;
+						word-wrap: break-word;
 					}
 				}
 			}
