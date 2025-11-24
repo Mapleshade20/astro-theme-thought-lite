@@ -31,18 +31,11 @@
 
 :root {
 	.light-theme();
-	--font-serif: "Noto Serif", serif;
-	--font-monospace: "Maple Mono NF CN", monospace;
-	--font-cursive: "Playwrite MX", "The Peak Font Plus", serif;
+	--font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', emoji;
+	--font-serif: 'Merriweather', ui-serif, 'Georgia', 'Cambria', 'Times New Roman', 'Times', serif;
+	--font-mono: 'Fira Code', 'Fira Mono', 'Maple Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, 'Liberation Mono', 'Menlo', 'Courier New', monospace;
+	--font-cursive: 'Pacifico', cursive;
 	--swup-fade-theme-duration: .15s;
-}
-
-:lang(zh-cn) {
-	--font-serif: "Noto Serif SC", serif;
-}
-
-:lang(ja) {
-	--font-serif: "Noto Serif JP", serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -103,7 +96,7 @@ html {
 
 body {
 	font-size: 1.0625rem;
-	font-family: var(--font-serif), var(--font-monospace);
+	font-family: var(--font-sans);
 	color: var(--primary-color);
 	background-color: var(--background-color);
 
@@ -168,8 +161,8 @@ input[type="checkbox"] {
 			height: 1rem;
 			width: 1rem;
 
-			font-family: var(--font-monospace);
 			font-size: 0.8rem;
+			font-weight: bold;
 			text-align: center;
 			color: var(--background-color);
 

@@ -126,7 +126,7 @@ onMount(() => {
 							<a href={getRelativeLocaleUrl(locale, `/note/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
 						{/if}
 					</div>
-					<time datetime={note.data.timestamp.toISOString()} class="font-mono text-2.6 c-remark">{Time(note.data.timestamp)}</time>
+					<time datetime={note.data.timestamp.toISOString()} class="text-2.6 c-remark">{Time(note.data.timestamp)}</time>
 				</div>
 				<span class="flex items-center gap-1 sm:ml-a c-remark">
 					{#each note.data.tags as tag}
@@ -139,7 +139,7 @@ onMount(() => {
 		{/each}
 
 		{#if pages > 1}
-			<footer class="sticky bottom-0 flex items-center justify-center gap-3 mt-a pb-1 c-weak bg-background font-mono">
+			<footer class="sticky bottom-0 flex items-center justify-center gap-3 mt-a pb-1 c-weak bg-background">
 				<button onclick={() => (page = Math.max(1, page - 1))}>{@render left()}</button>
 				<button class:location={1 == page} onclick={() => (page = 1)}>{1}</button>
 
@@ -192,7 +192,6 @@ onMount(() => {
 				margin-top: 0.25rem 0rem 0.5rem;
 				border-bottom: 2px solid;
 
-				font-style: var(--font-monospace);
 				font-size: 0.875rem;
 
 				transition: color 0.15s ease-in-out;
