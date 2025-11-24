@@ -21,7 +21,13 @@ const config = siteConfig({
 		section: "*",
 		limit: 20
 	},
-	latest: "*"
+	latest: "*",
+	library: {
+		progressRingTheme: "minimal",
+		excerptLength: 160,
+		showInNavigation: true,
+		showAtHome: true
+	}
 });
 
 export const monolocale = Number(config.i18n.locales.length) === 1;

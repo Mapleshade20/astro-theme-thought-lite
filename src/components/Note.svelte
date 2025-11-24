@@ -117,8 +117,14 @@ onMount(() => {
 					<div class="flex gap-1 items-center">
 						{#if note.data.top > 0}<span>{@render top()}</span>{/if}
 						{#if note.data.sensitive}<span>{@render sensitive()}</span>{/if}
-						{#if note.data.series}<button onclick={() => chooseSeries(note.data.series, true)}>{note.data.series}</button><b>|</b>{/if}
-						<a href={getRelativeLocaleUrl(locale, `/note/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
+						{#if note.type === "knowledge"}
+							<span class="status-badge status-{note.data.status}" title={t(`library.status.${note.data.status}`)}>{t(`library.status.${note.data.status}`)}</span>
+							<b>|</b>
+							<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
+						{:else}
+							{#if note.data.series}<button onclick={() => chooseSeries(note.data.series, true)}>{note.data.series}</button><b>|</b>{/if}
+							<a href={getRelativeLocaleUrl(locale, `/note/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
+						{/if}
 					</div>
 					<time datetime={note.data.timestamp.toISOString()} class="font-mono text-2.6 c-remark">{Time(note.data.timestamp)}</time>
 				</div>
@@ -196,6 +202,29 @@ onMount(() => {
 					color: var(--primary-color);
 				}
 			}
+		}
+	}
+
+	.status-badge {
+		display: inline-block;
+		padding: 0.1rem 0.4rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+
+		&.status-todo {
+			background-color: rgba(100, 100, 100, 0.15);
+			color: var(--text-color);
+		}
+
+		&.status-inProgress {
+			background-color: rgba(59, 130, 246, 0.15);
+			color: rgb(59, 130, 246);
+		}
+
+		&.status-done {
+			background-color: rgba(34, 197, 94, 0.15);
+			color: rgb(34, 197, 94);
 		}
 	}
 
