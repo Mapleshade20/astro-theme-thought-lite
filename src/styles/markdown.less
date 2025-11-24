@@ -267,6 +267,9 @@
 		vertical-align: baseline;
 		font-size: 1em;
 
+		color: var(--weak-color);
+		user-select: none;
+
 		transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
 
 		&:hover {
@@ -276,6 +279,7 @@
 
 		a {
 			text-decoration: none;
+			user-select: none;
 
 			&::before {
 				content: "[";
