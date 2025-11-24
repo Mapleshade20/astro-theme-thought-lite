@@ -9,9 +9,11 @@ import Menu from "./Menu.svelte";
 let {
 	locale,
 	route,
+	showLibrary = false,
 	home,
 	note,
 	jotting,
+	library,
 	about,
 	globe,
 	rss,
@@ -19,7 +21,7 @@ let {
 	moon,
 	bars,
 	close
-}: { locale: string; route: string } & { [key: string]: Snippet } = $props();
+}: { locale: string; route: string; showLibrary?: boolean } & { [key: string]: Snippet } = $props();
 
 const t = i18nit(locale);
 
@@ -29,6 +31,7 @@ const routes: { path: string; extra?: string[]; icon: Snippet; label: string }[]
 	{ label: t("navigation.home"), path: homeRoute, extra: [getRelativeLocaleUrl(locale, "/preface")], icon: home },
 	{ label: t("navigation.note"), path: getRelativeLocaleUrl(locale, "/note"), icon: note },
 	{ label: t("navigation.jotting"), path: getRelativeLocaleUrl(locale, "/jotting"), icon: jotting },
+	...(showLibrary ? [{ label: t("navigation.library"), path: getRelativeLocaleUrl(locale, "/library"), icon: library }] : []),
 	{ label: t("navigation.about"), path: getRelativeLocaleUrl(locale, "/about"), icon: about }
 ];
 
@@ -76,7 +79,7 @@ onMount(() => {
 <div role="button" onclick={() => (menu = false)} class:pointer-events-none={!menu} class:bg-transparent={!menu} class="fixed top-0 left-0 w-screen h-screen pointer-events-auto bg-#aaaaaa88 transition-background-color sm:hidden"></div>
 
 <nav bind:this={navigator} class:transform-translate-x-full={!menu} class="fixed top-0 right-0 flex flex-col justify-between items-start gap-5 p-5 bg-background h-full sm:contents overflow-hidden transition-transform">
-	<header class="grid gap-5 c-secondary grid-rows-[repeat(5,1fr)] sm:(grid-rows-none grid-cols-[repeat(4,1fr)])">
+	<header class="grid gap-5 c-secondary grid-rows-[repeat(6,1fr)] sm:(grid-rows-none)" class:sm:grid-cols-[repeat(5,1fr)]={showLibrary} class:sm:grid-cols-[repeat(4,1fr)]={!showLibrary}>
 		<button onclick={() => (menu = false)} class="sm:hidden">{@render close()}</button>
 
 		{#each routes as item}

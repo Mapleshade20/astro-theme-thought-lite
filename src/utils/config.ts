@@ -8,6 +8,11 @@ type CCLicenseType = "CC0 1.0" | "CC BY 4.0" | "CC BY-SA 4.0" | "CC BY-NC 4.0" |
  */
 type Section = "note" | "jotting";
 
+/**
+ * Progress Ring Theme Type
+ */
+type ProgressRingTheme = "minimal" | "plain";
+
 interface SiteConfigOptions<Locales extends readonly string[] = readonly string[]> {
 	/** Site Title */
 	title: string;
@@ -59,6 +64,21 @@ interface SiteConfigOptions<Locales extends readonly string[] = readonly string[
 
 	/** Latest Content Display */
 	latest?: "*" | Section[];
+
+	/** Library Configuration */
+	library?: {
+		/** Progress Ring Theme */
+		progressRingTheme?: ProgressRingTheme;
+
+		/** Excerpt Length */
+		excerptLength?: number;
+
+		/** Show Library in Navigation */
+		showInNavigation?: boolean;
+
+		/** Show Library on Home Page */
+		showAtHome?: boolean;
+	};
 }
 
 /**
