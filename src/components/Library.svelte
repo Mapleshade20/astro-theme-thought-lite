@@ -61,7 +61,6 @@
 						.book-progress {
 							color: var(--weak-color);
 							font-size: 0.75rem;
-							font-family: var(--monospace);
 						}
 					}
 				}
@@ -159,7 +158,6 @@
 					.activity-date {
 						color: var(--remark-color);
 						font-size: 0.75rem;
-						font-family: var(--monospace);
 					}
 
 					.activity-excerpt {
