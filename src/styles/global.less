@@ -1,21 +1,23 @@
 .light-theme() {
-	--primary-color: #2a2a28;
+	--primary-color: #313131;
 	--secondary-color: #50504d;
 	--remark-color: #757575;
+	--strong-color: #121212;
 	--weak-color: #9f9f9c;
-	--background-color: #fffffd;
+	--background-color: #ffffff;
 	--block-color: #eeeeee;
 	--shadow-color: #cdcdcc;
 	--selection-color: #adadacc3;
 }
 
 .dark-theme() {
-	--primary-color: #dddddb;
+	--primary-color: #cacaca;
 	--secondary-color: #aaaaa8;
 	--remark-color: #a5a5a5;
+	--strong-color: #dfdfdf;
 	--weak-color: #5d5d5a;
-	--background-color: #0e0e0c;
-	--block-color: #1e1e1e;
+	--background-color: #151312;
+	--block-color: #1e1c1b;
 	--shadow-color: #323231;
 	--selection-color: #adadacc3;
 }
@@ -92,6 +94,15 @@ h1 {
 	user-select: text;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	color: var(--strong-color);
+}
+
 html {
 	scroll-behavior: smooth;
 
@@ -99,7 +110,7 @@ html {
 }
 
 body {
-	font-size: 1.0625rem;
+	font-size: 1rem;
 	font-family: var(--font-sans);
 	color: var(--primary-color);
 	background-color: var(--background-color);
