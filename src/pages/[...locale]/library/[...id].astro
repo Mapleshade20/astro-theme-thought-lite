@@ -8,9 +8,7 @@ import Icon from "$components/Icon.astro";
 import TOC from "$components/TOC.astro";
 import Position from "$components/Position.astro";
 import Sensitive from "$components/Sensitive.svelte";
-import ProgressRing from "$components/ProgressRing.svelte";
 import i18nit from "$i18n";
-import siteConfig from "site.config.ts";
 import { getImage } from "astro:assets";
 
 export async function getStaticPaths() {
@@ -77,18 +75,6 @@ if (coverSrc && !coverSrc.startsWith("http://") && !coverSrc.startsWith("https:/
 	}
 }
 
-// Get theme from site config
-const theme = siteConfig.library?.progressRingTheme || "plain";
-
-// Determine type icon and label
-const typeConfig = {
-	book: { icon: "lucide:book-open", label: t("library.type.book") },
-	video: { icon: "lucide:video", label: t("library.type.video") },
-	course: { icon: "lucide:graduation-cap", label: t("library.type.course") }
-};
-
-const typeInfo = typeConfig[item.data.type];
-
 // Status label
 const statusLabel = {
 	todo: t("library.status.todo"),
@@ -100,88 +86,78 @@ const statusLabel = {
 <Base title={item.data.title} {locale} description={item.data.description} article={item.data.dates?.start ? { timestamp: item.data.dates.start, tags: item.data.tags } : undefined}>
 	<main class="flex flex-col gap-6">
 		<header class="flex flex-col gap-4">
-			<!-- Title section with progress ring -->
-			<div class="flex items-start gap-4">
-				<div class="flex-shrink-0">
-					<ProgressRing client:load status={item.data.status} progress={progress} size={100} theme={theme}>
-						<div class="w-full h-full flex items-center justify-center c-weak">
-							<Icon name={typeInfo.icon} size={40} />
-						</div>
-					</ProgressRing>
-				</div>
+			<div class="flex gap-4">
+				<!-- Title section -->
+				<div class="flex flex-col gap-4 flex-grow">
+					<div class="flex flex-col gap-2">
+						<h1 class="text-3xl">{item.data.title}</h1>
+						{item.data.author && <p class="text-base c-remark">{item.data.author}</p>}
+					</div>
 
-				<div class="flex flex-col gap-2 flex-grow">
-					<h1 class="text-3xl">{item.data.title}</h1>
-					{item.data.author && <p class="text-lg c-remark">{item.data.author}</p>}
+					<!-- Metadata section -->
+					<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap children:(flex items-center gap-1 text-sm c-remark)">
+						<span>
+							<Icon name="lucide:activity" />
+							{statusLabel[item.data.status]}
+							{progress > 0 && `(${progress}%)`}
+						</span>
+						{
+							item.data.dates?.start && (
+								<time title={Time.date(item.data.dates.start)}>
+									<Icon name="lucide:calendar-arrow-down" />
+									{t("library.dates.startedOn")} {Time.date(item.data.dates.start)}
+								</time>
+							)
+						}
+						{
+							item.data.dates?.finish && (
+								<time title={Time.date(item.data.dates.finish)}>
+									<Icon name="lucide:calendar-check" />
+									{t("library.dates.finishedOn")} {Time.date(item.data.dates.finish)}
+								</time>
+							)
+						}
+						{
+							item.data.dates?.lastEdited &&
+								(() => {
+									const agoData = Time.ago(item.data.dates.lastEdited);
+									return (
+										<time title={Time.date(item.data.dates.lastEdited)}>
+											<Icon name="lucide:clock" />
+											{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
+										</time>
+									);
+								})()
+						}
+						{
+							item.data.tags?.length && (
+								<span>
+									<Icon name="lucide:hash" />
+									{item.data.tags?.join("; ")}
+								</span>
+							)
+						}
+						{
+							frontmatter.words && (
+								<span>
+									<Icon name="lucide:pilcrow" />
+									{t("read.words", { words: frontmatter.words })}
+								</span>
+							)
+						}
+					</div>
+
+					{item.data.description && <p class="text-base c-remark border-l-2 border-l-solid border-l-primary pl-3">{item.data.description}</p>}
 				</div>
 
 				{
 					coverSrc && (
-						<div class="flex-shrink-0 hidden sm:block">
-							<div class="h-25 w-auto aspect-[3/4] rounded-lg shadow-md" style={`background-image: url('${coverSrc}'); background-size: cover; background-position: center; background-repeat: no-repeat;`} role="img" aria-label={item.data.title} />
+						<div class="flex-shrink-0 hidden sm:block self-stretch">
+							<div class="h-full w-auto aspect-[3/4] rounded-lg shadow-md" style={`background-image: url('${coverSrc}'); background-size: cover; background-position: center; background-repeat: no-repeat;`} role="img" aria-label={item.data.title} />
 						</div>
 					)
 				}
 			</div>
-
-			<!-- Metadata section -->
-			<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap children:(flex items-center gap-1 text-3.5 c-secondary)">
-				<span>
-					<Icon name={typeInfo.icon} />
-					{typeInfo.label}
-				</span>
-				<span>
-					<Icon name="lucide:activity" />
-					{statusLabel[item.data.status]}
-					{progress > 0 && `(${progress}%)`}
-				</span>
-				{
-					item.data.dates?.start && (
-						<time title={Time.date(item.data.dates.start)}>
-							<Icon name="lucide:calendar-arrow-down" />
-							{t("library.dates.startedOn")} {Time.date(item.data.dates.start)}
-						</time>
-					)
-				}
-				{
-					item.data.dates?.finish && (
-						<time title={Time.date(item.data.dates.finish)}>
-							<Icon name="lucide:calendar-check" />
-							{t("library.dates.finishedOn")} {Time.date(item.data.dates.finish)}
-						</time>
-					)
-				}
-				{
-					item.data.dates?.lastEdited &&
-						(() => {
-							const agoData = Time.ago(item.data.dates.lastEdited);
-							return (
-								<time title={Time.date(item.data.dates.lastEdited)}>
-									<Icon name="lucide:clock" />
-									{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
-								</time>
-							);
-						})()
-				}
-				{
-					item.data.tags?.length && (
-						<span>
-							<Icon name="lucide:hash" />
-							{item.data.tags?.join("; ")}
-						</span>
-					)
-				}
-				{
-					frontmatter.words && (
-						<span>
-							<Icon name="lucide:pilcrow" />
-							{t("read.words", { words: frontmatter.words })}
-						</span>
-					)
-				}
-			</div>
-
-			{item.data.description && <p class="text-base c-remark border-l-2 border-l-solid border-l-primary pl-3">{item.data.description}</p>}
 
 			<hr class="b-b b-b-solid b-weak" />
 		</header>

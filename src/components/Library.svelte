@@ -107,19 +107,31 @@
 			// Latest activity card
 			.activity-card {
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
 				gap: 0.75rem;
 				padding: 1rem;
 				border: 1px solid var(--border-color);
 				border-radius: 0.5rem;
 				background-color: var(--block-color);
 				transition: opacity 0.3s ease;
+				align-items: flex-start;
+
+				@media (min-width: 640px) {
+					flex-direction: column;
+					align-items: stretch;
+				}
 
 				.activity-cover {
-					width: 100%;
+					width: 40%;
+					flex-shrink: 0;
 					aspect-ratio: 3 / 4;
 					border-radius: 0.375rem;
 					overflow: hidden;
+					order: 1;
+
+					@media (min-width: 640px) {
+						width: 100%;
+					}
 
 					.cover-image {
 						width: 100%;
@@ -146,7 +158,9 @@
 				.activity-info {
 					display: flex;
 					flex-direction: column;
+					flex-grow: 1;
 					gap: 0.5rem;
+					order: 0;
 
 					.activity-title {
 						font-weight: 600;
@@ -300,6 +314,13 @@
 			<section>
 				<h3>{hoveredBook ? t("library.thisReadingSession") : t("library.latestActivity")}</h3>
 				<div class="activity-card">
+					<div class="activity-info">
+						<div class="activity-title">{displayBook.data.title}</div>
+						{#if displayBook.latestDate}
+							<div class="activity-date">{formatDate(displayBook.latestDate)}</div>
+						{/if}
+						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
+					</div>
 					<div class="activity-cover">
 						<div class="cover-image" class:has-cover={displayBook.data.cover} style={displayBook.data.cover ? `background-image: url('${displayBook.data.cover}')` : ""} role="img" aria-label={displayBook.data.title}>
 							{#if !displayBook.data.cover}
@@ -314,13 +335,6 @@
 								</div>
 							{/if}
 						</div>
-					</div>
-					<div class="activity-info">
-						<div class="activity-title">{displayBook.data.title}</div>
-						{#if displayBook.latestDate}
-							<div class="activity-date">{formatDate(displayBook.latestDate)}</div>
-						{/if}
-						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
 					</div>
 				</div>
 			</section>

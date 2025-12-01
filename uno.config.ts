@@ -19,6 +19,7 @@ export default defineConfig({
 			primary: "var(--primary-color)",
 			secondary: "var(--secondary-color)",
 			remark: "var(--remark-color)",
+			strong: "var(--strong-color)",
 			weak: "var(--weak-color)",
 			background: "var(--background-color)",
 			block: "var(--block-color)",

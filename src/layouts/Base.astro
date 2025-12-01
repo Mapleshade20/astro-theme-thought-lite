@@ -40,6 +40,7 @@ const title = config.title;
 </script>
 
 <App {title} {subtitle} {description} {article} author={config.author.name}>
+	<slot name="head" slot="head" />
 	<Tip client:load>
 		<Icon name="lucide:info" slot="information" is:inline />
 		<Icon name="lucide:circle-check" slot="success" is:inline />
@@ -49,30 +50,32 @@ const title = config.title;
 		<Icon name="lucide:x" slot="x" is:inline />
 	</Tip>
 	<header class="sticky top-0 z-40 mb-4 w-full">
-    	<div class="absolute inset-0 backdrop-filter backdrop-blur shadow-lg -z-1 bg-[color-mix(in_srgb,var(--background-color)_70%,transparent)]">
-    	</div>
-		<div class="mx-a px-3 w-[min(100%,1000px)]">
-    		<div class="relative flex items-center justify-between pt-3 pb-3 sm:(pt-2 pb-2)">
-        		<a href={getRelativeLocaleUrl(locale)} class="text-size-lg sm:text-size-lg font-normal">{title}</a>
+		<div class="absolute inset-0 backdrop-filter backdrop-blur -z-1 bg-[color-mix(in_srgb,var(--background-color)_70%,transparent)]"></div>
+		<div class="mx-a px-4 w-[min(100%,1000px)]">
+			<div class="relative flex items-center justify-between py-2.25">
+				<a href={getRelativeLocaleUrl(locale)} class="flex items-center gap-2 text-size-lg c-strong">
+					<img src="/avatar.webp" alt="" class="w-13 rounded-full opacity-80" />
+					{title}
+				</a>
 
-        		<Navigator {locale} {route} showLibrary={config.library?.showInNavigation} client:load>
-            		<Icon name="lucide:tent" slot="home" is:inline />
-            		<Icon name="lucide:list" slot="note" is:inline />
-            		<Icon name="lucide:feather" slot="jotting" is:inline />
-            		<Icon name="lucide:book-open" slot="library" is:inline />
-            		<Icon name="lucide:at-sign" slot="about" is:inline />
-            		<Icon name="lucide:earth" slot="globe" is:inline />
-            		<Icon name="lucide:rss" slot="rss" is:inline />
-            		<Icon name="lucide:sun" slot="sun" is:inline />
-            		<Icon name="lucide:moon" slot="moon" is:inline />
-            		<Icon name="lucide:align-justify" slot="bars" is:inline />
-            		<Icon name="lucide:x" slot="close" is:inline />
-        		</Navigator>
-    		</div>
-    	</div>
+				<Navigator {locale} {route} showLibrary={config.library?.showInNavigation} client:load>
+					<Icon name="lucide:tent" slot="home" is:inline />
+					<Icon name="lucide:list" slot="note" is:inline />
+					<Icon name="lucide:feather" slot="jotting" is:inline />
+					<Icon name="lucide:book-open" slot="library" is:inline />
+					<Icon name="lucide:at-sign" slot="about" is:inline />
+					<Icon name="lucide:earth" slot="globe" is:inline />
+					<Icon name="lucide:rss" slot="rss" is:inline />
+					<Icon name="lucide:sun" slot="sun" is:inline />
+					<Icon name="lucide:moon" slot="moon" is:inline />
+					<Icon name="lucide:align-justify" slot="bars" is:inline />
+					<Icon name="lucide:x" slot="close" is:inline />
+				</Navigator>
+			</div>
+		</div>
 	</header>
-	<div class="flex flex-col mx-a px-6 pt-3 w-[min(100%,1000px)]">
-		<div id="body" class="flex flex-col min-h-screen">
+	<div class="flex flex-col mx-a px-6 pt-3 w-[min(100%,1000px)] min-h-screen">
+		<div id="body" class="flex flex-col flex-grow">
 			<slot />
 		</div>
 

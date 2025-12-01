@@ -62,7 +62,7 @@ let filtered: any[] = $derived.by(() => {
 });
 
 // Calculate pagination
-const size: number = 20;
+const size: number = 12;
 let pages: number = $derived(Math.ceil(filtered.length / size));
 
 // Ensure page is within valid range
@@ -110,27 +110,27 @@ onMount(() => {
 </script>
 
 <main class="flex flex-col-reverse sm:flex-row gap-10 grow">
-	<article class="flex flex-col gap-4 grow">
+	<article class="flex flex-col gap-12 grow">
 		{#each list as note (note.id)}
-			<section animate:flip={{ duration: 150 }} class="flex flex-col sm:flex-row">
-				<div class="flex flex-col gap-1">
-					<div class="flex gap-1 items-center">
+			<section animate:flip={{ duration: 150 }} class="flex flex-col sm:flex-row gap-0.5">
+				<div class="flex flex-col gap-0.5 sm:w-80%">
+					<time datetime={note.data.timestamp.toISOString()} class="text-xs c-weak">{Time.date.locale(note.data.timestamp, locale)}</time>
+					<div class="flex gap-1 items-center text-lg c-strong">
 						{#if note.data.top > 0}<span>{@render top()}</span>{/if}
 						{#if note.data.sensitive}<span>{@render sensitive()}</span>{/if}
 						{#if note.type === "knowledge"}
 							<span class="status-badge status-{note.data.status}" title={t(`library.status.${note.data.status}`)}>{t(`library.status.${note.data.status}`)}</span>
-							<b>|</b>
 							<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
 						{:else}
 							{#if note.data.series}<button onclick={() => chooseSeries(note.data.series, true)}>{note.data.series}</button><b>|</b>{/if}
 							<a href={getRelativeLocaleUrl(locale, `/note/${monolocale ? note.id : note.id.split("/").slice(1).join("/")}`)} class="link">{note.data.title}</a>
 						{/if}
 					</div>
-					<time datetime={note.data.timestamp.toISOString()} class="text-2.6 c-remark">{Time(note.data.timestamp)}</time>
+					{#if note.data.description}<p class="text-sm c-remark m-0">{note.data.description}</p>{/if}
 				</div>
-				<span class="flex items-center gap-1 sm:ml-a c-remark">
+				<span class="flex flex-wrap items-start content-start gap-1 sm:w-20% sm:justify-end c-weak">
 					{#each note.data.tags as tag}
-						<button onclick={() => switchTag(tag, true)} class="text-3.5 sm:text-sm">#{tag}</button>
+						<button onclick={() => switchTag(tag, true)} class="text-xs">#{tag}</button>
 					{/each}
 				</span>
 			</section>

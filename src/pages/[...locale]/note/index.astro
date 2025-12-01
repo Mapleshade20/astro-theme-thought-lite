@@ -45,6 +45,7 @@ let list: Array<{
 		timestamp: Date | undefined;
 		series?: string;
 		tags?: string[];
+		description?: string;
 		sensitive: boolean;
 		top: number;
 		status?: string;
@@ -58,6 +59,7 @@ let list: Array<{
 		timestamp: note.data.timestamp,
 		series: note.data.series,
 		tags: note.data.tags,
+		description: note.data.description,
 		sensitive: note.data.sensitive,
 		top: note.data.top
 	}
