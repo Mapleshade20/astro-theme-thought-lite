@@ -8,6 +8,7 @@ import UnoCSS from "unocss/astro";
 import swup from "@swup/astro";
 import icon from "astro-icon";
 import githubLight from "shiki/themes/github-light.mjs";
+import darkPlus from "shiki/themes/dark-plus.mjs";
 
 import GFM from "remark-gfm";
 import ins from "remark-ins";
@@ -95,7 +96,12 @@ export default defineConfig({
 						"#fff": "var(--block-color)"
 					}
 				},
-				dark: "dark-plus"
+				dark: {
+					...darkPlus,
+					colorReplacements: {
+						"#1e1e1e": "var(--block-color)"
+					}
+				}
 			},
 			transformers: [
 				copy({
