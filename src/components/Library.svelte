@@ -233,8 +233,15 @@ function formatDate(date: Date): string {
 						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
 					</div>
 					<div class="activity-cover">
-						<div class="cover-image" class:has-cover={displayBook.data.cover} style={displayBook.data.cover ? `background-image: url('${displayBook.data.cover}')` : ""} role="img" aria-label={displayBook.data.title}>
-							{#if !displayBook.data.cover}
+						{#if displayBook.data.cover}
+							{@const isRemote = typeof displayBook.data.cover === "string"}
+							{@const coverSrc = isRemote ? displayBook.data.cover : displayBook.data.cover.src}
+							{@const coverWidth = isRemote ? undefined : displayBook.data.cover.width}
+							{@const coverHeight = isRemote ? undefined : displayBook.data.cover.height}
+
+							<img src={coverSrc} alt={displayBook.data.title} class="cover-image object-cover" width={coverWidth} height={coverHeight} loading="lazy" decoding="async" />
+						{:else}
+							<div class="cover-image placeholder-container">
 								<div class="placeholder">
 									{#if displayBook.data.type === "book" && icons["icon-book-large"]}
 										{@render icons["icon-book-large"]()}
@@ -244,8 +251,8 @@ function formatDate(date: Date): string {
 										{@render icons["icon-course-large"]()}
 									{/if}
 								</div>
-							{/if}
-						</div>
+							</div>
+						{/if}
 					</div>
 				</div>
 			</section>
@@ -391,11 +398,13 @@ function formatDate(date: Date): string {
 					.cover-image {
 						width: 100%;
 						height: 100%;
-						background-size: cover;
-						background-position: center;
-						background-repeat: no-repeat;
+						display: block;
 
-						&:not(.has-cover) {
+						&.object-cover {
+							object-fit: cover;
+						}
+
+						&.placeholder-container {
 							background-color: var(--background-color);
 						}
 

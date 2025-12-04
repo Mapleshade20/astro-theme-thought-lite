@@ -1,5 +1,5 @@
 ---
-import type { MarkdownHeading, ImageMetadata } from "astro";
+import type { MarkdownHeading } from "astro";
 import { i18n } from "astro:config/client";
 import config, { monolocale } from "$config";
 import { getCollection, render } from "astro:content";
@@ -10,7 +10,7 @@ import TOC from "$components/TOC.astro";
 import Position from "$components/Position.astro";
 import Sensitive from "$components/Sensitive.svelte";
 import i18nit from "$i18n";
-import { getImage } from "astro:assets";
+import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
 	// Get all knowledge items excluding drafts
@@ -67,24 +67,7 @@ const t = i18nit(locale);
 // Calculate progress percentage from totalPages and currentPage
 const progress = item.data.totalPages && item.data.totalPages > 0 ? Math.round((item.data.currentPage / item.data.totalPages) * 100) : 0;
 
-// Resolve cover image path
-let coverSrc = item.data.cover;
-if (coverSrc && !coverSrc.startsWith("http://") && !coverSrc.startsWith("https://") && !coverSrc.startsWith("/")) {
-	// Local relative path - need to import it
-	try {
-		const images = import.meta.glob("/src/content/knowledge/**/*.{jpg,jpeg,png,webp,gif}", { eager: true, import: "default" });
-		// For folder/index.md structure, the ID is just "folder", so append trailing slash
-		const imagePath = `/src/content/knowledge/${item.id}/${coverSrc}`;
-		const imageModule = images[imagePath];
-		if (imageModule) {
-			// Use getImage() to optimize the image
-			const optimizedImage = await getImage({ src: imageModule as ImageMetadata });
-			coverSrc = optimizedImage.src;
-		}
-	} catch (error) {
-		console.warn(`Failed to resolve cover image for ${item.id}:`, error);
-	}
-}
+const coverImage = item.data.cover;
 
 // Status label
 const statusLabel = {
@@ -155,9 +138,9 @@ const statusLabel = {
 				</div>
 
 				{
-					coverSrc && (
-						<div class="flex-shrink-0 hidden sm:block self-stretch">
-							<div class="h-full w-auto aspect-[3/4] rounded-lg shadow-md" style={`background-image: url('${coverSrc}'); background-size: cover; background-position: center; background-repeat: no-repeat;`} role="img" aria-label={item.data.title} />
+					coverImage && (
+						<div class="flex-shrink-0 hidden sm:block self-stretch relative aspect-[3/4]">
+							<Image src={coverImage} alt={item.data.title} class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" width={200} inferSize densities={[1.5, 2]} />
 						</div>
 					)
 				}

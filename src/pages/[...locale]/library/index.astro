@@ -1,5 +1,4 @@
 ---
-import type { ImageMetadata } from "astro";
 import { getCollection } from "astro:content";
 import { i18n } from "astro:config/client";
 import Base from "$layouts/Base.astro";
@@ -8,7 +7,6 @@ import i18nit from "$i18n";
 import { extractExcerpt } from "$utils/excerpt";
 import siteConfig from "site.config.ts";
 import { Icon } from "astro-icon/components";
-import { getImage } from "astro:assets";
 
 export async function getStaticPaths() {
 	// Create path for each locale, omitting default locale from URL
@@ -44,29 +42,13 @@ const processedKnowledge = await Promise.all(
 		const latestDate = item.data.dates?.lastEdited || item.data.dates?.finish || item.data.dates?.start || null;
 
 		// Resolve cover image path
-		let coverSrc = item.data.cover;
-		if (coverSrc && !coverSrc.startsWith("http://") && !coverSrc.startsWith("https://") && !coverSrc.startsWith("/")) {
-			// Local relative path - need to import it
-			try {
-				const images = import.meta.glob("/src/content/knowledge/**/*.{jpg,jpeg,png,webp,gif}", { eager: true, import: "default" });
-				// For folder/index.md structure, the ID is just "folder", so append trailing slash
-				const imagePath = `/src/content/knowledge/${item.id}/${coverSrc}`;
-				const imageModule = images[imagePath];
-				if (imageModule) {
-					// Use getImage() to optimize the image
-					const optimizedImage = await getImage({ src: imageModule as ImageMetadata });
-					coverSrc = optimizedImage.src;
-				}
-			} catch (error) {
-				console.warn(`Failed to resolve cover image for ${item.id}:`, error);
-			}
-		}
+		const coverImage = item.data.cover;
 
 		return {
 			...item,
 			data: {
 				...item.data,
-				cover: coverSrc
+				cover: coverImage
 			},
 			progress,
 			excerpt,
