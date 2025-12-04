@@ -25,12 +25,9 @@ const notes = await getCollection("note", note => {
 
 // Fetch knowledge items that should appear in note feed
 const knowledge = await getCollection("knowledge", item => {
-	// Extract language from the file path structure
-	const [language] = item.id.split("/");
-
 	// Filter criteria: must be published, match locale, and have showAsNote enabled
 	let published = !item.data.draft;
-	let localed = language === locale;
+	let localed = monolocale || item.id.split("/")[0] === locale;
 	let showAsNote = item.data.showAsNote;
 
 	return published && localed && showAsNote;

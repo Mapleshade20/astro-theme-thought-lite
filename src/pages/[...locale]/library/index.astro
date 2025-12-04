@@ -1,11 +1,11 @@
 ---
 import { getCollection } from "astro:content";
+import config, { monolocale } from "$config";
 import { i18n } from "astro:config/client";
 import Base from "$layouts/Base.astro";
 import Library from "$components/Library.svelte";
 import i18nit from "$i18n";
 import { extractExcerpt } from "$utils/excerpt";
-import siteConfig from "site.config.ts";
 import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
@@ -18,12 +18,9 @@ const { locale = i18n!.defaultLocale } = Astro.params;
 const t = i18nit(locale);
 
 const knowledge = await getCollection("knowledge", item => {
-	// Extract language from the file path structure
-	const [language] = item.id.split("/");
-
 	// Filter criteria: must be published and match locale
 	let published = !item.data.draft;
-	let localed = language === locale;
+	let localed = monolocale || item.id.split("/")[0] === locale;
 
 	return published && localed;
 });
@@ -35,7 +32,7 @@ const processedKnowledge = await Promise.all(
 		const progress = item.data.totalPages && item.data.totalPages > 0 ? Math.round((item.data.currentPage / item.data.totalPages) * 100) : 0;
 
 		// Extract excerpt from markdown content
-		const excerptLength = siteConfig.library?.excerptLength || 150;
+		const excerptLength = config.library?.excerptLength || 150;
 		const excerpt = extractExcerpt(item.body || "", excerptLength);
 
 		// Determine latest date (dates.lastEdited > dates.finish > dates.start)
@@ -61,7 +58,7 @@ const processedKnowledge = await Promise.all(
 const allTags = Array.from(new Set(knowledge.flatMap(item => item.data.tags).filter(Boolean))).sort();
 
 // Get theme from site config
-const theme = siteConfig.library?.progressRingTheme || "plain";
+const theme = config.library?.progressRingTheme || "plain";
 
 // Icon mapping for types
 const iconMap = {

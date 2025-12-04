@@ -1,6 +1,7 @@
 <script lang="ts">
 import { getRelativeLocaleUrl } from "astro:i18n";
 import ProgressRing from "$components/ProgressRing.svelte";
+import { monolocale } from "$config";
 import Time from "$utils/time";
 import i18nit from "$i18n";
 
@@ -107,7 +108,7 @@ function formatDate(date: Date): string {
 				<h2>{t("library.status.inProgress")}</h2>
 				<div class="books-grid">
 					{#each inProgressBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
 							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
 								<div class="w-full h-full flex items-center justify-center c-weak">
 									{#if book.data.type === "book" && icons["icon-book"]}
@@ -137,7 +138,7 @@ function formatDate(date: Date): string {
 				<h2>{t("library.status.todo")}</h2>
 				<div class="books-grid">
 					{#each todoBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
 							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
 								<div class="w-full h-full flex items-center justify-center c-weak">
 									{#if book.data.type === "book" && icons["icon-book"]}
@@ -167,7 +168,7 @@ function formatDate(date: Date): string {
 				<h2>{t("library.status.done")}</h2>
 				<div class="books-grid">
 					{#each doneBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
 							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
 								<div class="w-full h-full flex items-center justify-center c-weak">
 									{#if book.data.type === "book" && icons["icon-book"]}
