@@ -77,15 +77,8 @@ const t = i18nit(locale);
 						</span>
 					)
 				}
-				{
-					!!note.data.tags?.length && (
-						<span>
-							<Icon name="lucide:hash" />
-							{note.data.tags?.join("; ")}
-						</span>
-					)
-				}
 				<span><Icon name="lucide:pilcrow" />{t("read.words", { words: frontmatter.words })}</span>
+				<span><Icon name="lucide:eye" /><Fragment set:html={t("read.views", { views: `<span id="vercount_value_page_pv">-</span>` })} /></span>
 			</div>
 			<h1 class="text-3xl">{note.data.title}</h1>
 			<hr class="b-b b-b-solid b-weak" />
@@ -108,6 +101,15 @@ const t = i18nit(locale);
 				}
 			</div>
 		</Sensitive>
+
+		{
+			!!note.data.tags?.length && (
+				<footer class="flex items-center gap-1 text-xs c-weak">
+					<Icon name="lucide:tag" />
+					{note.data.tags?.join("; ")}
+				</footer>
+			)
+		}
 
 		<Position {locale} />
 	</main>

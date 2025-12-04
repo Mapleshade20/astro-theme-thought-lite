@@ -44,15 +44,8 @@ const t = i18nit(locale);
 		<header class="flex flex-col gap-4">
 			<div class="flex flex-row gap-3 children:(flex items-center gap-1 text-xs c-weak)">
 				<time datetime={jotting.data.timestamp.toISOString()}><Icon name="lucide:calendar" />{Time.date.locale(jotting.data.timestamp, locale)}</time>
-				{
-					!!jotting.data.tags?.length && (
-						<span>
-							<Icon name="lucide:hash" />
-							{jotting.data.tags?.join("; ")}
-						</span>
-					)
-				}
 				<span><Icon name="lucide:pilcrow" />{t("read.words", { words: frontmatter.words })}</span>
+				<span><Icon name="lucide:eye" /><Fragment set:html={t("read.views", { views: `<span id="vercount_value_page_pv">-</span>` })} /></span>
 			</div>
 			<h1 class="text-3xl">{jotting.data.title}</h1>
 			<hr class="b-b b-b-solid b-weak" />
@@ -61,6 +54,15 @@ const t = i18nit(locale);
 		<Sensitive {locale} back="/jotting" sensitive={jotting.data.sensitive} client:load>
 			<section id="markdown-content" class="markdown"><Content /></section>
 		</Sensitive>
+
+		{
+			!!jotting.data.tags?.length && (
+				<footer class="flex items-center gap-1 text-xs c-weak">
+					<Icon name="lucide:tag" />
+					{jotting.data.tags?.join("; ")}
+				</footer>
+			)
+		}
 
 		<Position {locale} />
 	</main>

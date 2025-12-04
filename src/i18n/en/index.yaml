@@ -70,6 +70,7 @@ note:
   top: To Top
 read:
   words: '{words} words'
+  views: '{views} views'
 sensitive:
   back: Return to list
   continue: I understand, continue reading

@@ -68,6 +68,7 @@ note:
   top: 回到顶部
 read:
   words: '{words} 字'
+  views: '{views} 浏览'
 sensitive:
   back: 返回列表
   continue: 我已知晓，继续阅读

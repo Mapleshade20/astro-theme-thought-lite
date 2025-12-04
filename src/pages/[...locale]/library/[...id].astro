@@ -129,14 +129,6 @@ const statusLabel = {
 							)
 						}
 						{
-							item.data.tags?.length && (
-								<span>
-									<Icon name="lucide:hash" />
-									{item.data.tags?.join("; ")}
-								</span>
-							)
-						}
-						{
 							frontmatter.words && (
 								<span>
 									<Icon name="lucide:pilcrow" />
@@ -144,6 +136,7 @@ const statusLabel = {
 								</span>
 							)
 						}
+						<span><Icon name="lucide:eye" /><Fragment set:html={t("read.views", { views: `<span id="vercount_value_page_pv">-</span>` })} /></span>
 						{
 							item.data.dates?.lastEdited &&
 								(() => {
@@ -190,6 +183,15 @@ const statusLabel = {
 				}
 			</div>
 		</Sensitive>
+
+		{
+			!!item.data.tags?.length && (
+				<footer class="flex items-center gap-1 text-xs c-weak">
+					<Icon name="lucide:tag" />
+					{item.data.tags?.join("; ")}
+				</footer>
+			)
+		}
 
 		<Position {locale} />
 	</main>
