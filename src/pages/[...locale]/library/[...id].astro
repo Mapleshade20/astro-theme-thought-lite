@@ -1,6 +1,7 @@
 ---
 import type { MarkdownHeading, ImageMetadata } from "astro";
 import { i18n } from "astro:config/client";
+import config, { monolocale } from "$config";
 import { getCollection, render } from "astro:content";
 import Time from "$utils/time";
 import Base from "$layouts/Base.astro";
@@ -16,11 +17,21 @@ export async function getStaticPaths() {
 	const knowledge = await getCollection("knowledge", item => !item.data.draft);
 
 	return knowledge.map(item => {
-		// Extract language and item ID from file path structure
-		const [language, ...id] = item.id.split("/");
+		let locale: string | undefined;
+		let id: string;
+		if (monolocale) {
+			locale = undefined;
+			id = item.id;
+		} else {
+			// Extract language and item ID from file path structure
+			const [language, ...ids] = item.id.split("/");
+
+			locale = config.i18n.defaultLocale === language ? undefined : language;
+			id = ids.join("/");
+		}
 
 		// Generate path params with optional locale (omit for default locale)
-		return { params: { locale: language === i18n?.defaultLocale ? undefined : language, id: id.join("/") }, props: { item } };
+		return { params: { locale, id }, props: { item } };
 	});
 }
 
@@ -103,31 +114,19 @@ const statusLabel = {
 						</span>
 						{
 							item.data.dates?.start && (
-								<time title={Time.date(item.data.dates.start)}>
+								<time title={Time.date.locale(item.data.dates.start, locale)}>
 									<Icon name="lucide:calendar-arrow-down" />
-									{t("library.dates.startedOn")} {Time.date(item.data.dates.start)}
+									{t("library.dates.startedOn")} {Time.date.locale(item.data.dates.start, locale)}
 								</time>
 							)
 						}
 						{
 							item.data.dates?.finish && (
-								<time title={Time.date(item.data.dates.finish)}>
+								<time title={Time.date.locale(item.data.dates.finish, locale)}>
 									<Icon name="lucide:calendar-check" />
-									{t("library.dates.finishedOn")} {Time.date(item.data.dates.finish)}
+									{t("library.dates.finishedOn")} {Time.date.locale(item.data.dates.finish, locale)}
 								</time>
 							)
-						}
-						{
-							item.data.dates?.lastEdited &&
-								(() => {
-									const agoData = Time.ago(item.data.dates.lastEdited);
-									return (
-										<time title={Time.date(item.data.dates.lastEdited)}>
-											<Icon name="lucide:clock" />
-											{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
-										</time>
-									);
-								})()
 						}
 						{
 							item.data.tags?.length && (
@@ -144,6 +143,18 @@ const statusLabel = {
 									{t("read.words", { words: frontmatter.words })}
 								</span>
 							)
+						}
+						{
+							item.data.dates?.lastEdited &&
+								(() => {
+									const agoData = Time.ago(item.data.dates.lastEdited);
+									return (
+										<time title={Time.date.locale(item.data.dates.lastEdited, locale)}>
+											<Icon name="lucide:clock" />
+											{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
+										</time>
+									);
+								})()
 						}
 					</div>
 

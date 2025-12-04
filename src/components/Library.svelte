@@ -1,3 +1,258 @@
+<script lang="ts">
+import { getRelativeLocaleUrl } from "astro:i18n";
+import ProgressRing from "$components/ProgressRing.svelte";
+import Time from "$utils/time";
+import i18nit from "$i18n";
+
+type KnowledgeItem = {
+	id: string;
+	data: any;
+	body: string;
+	progress: number;
+	excerpt: string;
+	latestDate: Date | null;
+};
+
+import type { Snippet } from "svelte";
+
+type Icons = {
+	"icon-book"?: Snippet;
+	"icon-video"?: Snippet;
+	"icon-course"?: Snippet;
+	"icon-book-large"?: Snippet;
+	"icon-video-large"?: Snippet;
+	"icon-course-large"?: Snippet;
+	"icon-empty"?: Snippet;
+};
+
+let {
+	locale,
+	books,
+	allTags,
+	theme = "plain",
+	...icons
+}: {
+	locale: string;
+	books: KnowledgeItem[];
+	allTags: string[];
+	theme?: string;
+} & Icons = $props();
+
+const t = i18nit(locale);
+
+// State for tag filtering
+let selectedTags = $state<string[]>([]);
+
+// State for hover interaction
+let hoveredBook = $state<KnowledgeItem | null>(null);
+
+// Filter books by selected tags
+const filteredBooks = $derived.by(() => {
+	if (selectedTags.length === 0) {
+		return books;
+	}
+
+	return books.filter(book => {
+		if (!book.data.tags || book.data.tags.length === 0) {
+			return false;
+		}
+		// Check if book contains ALL selected tags (AND logic, same as Note/Jotting)
+		return selectedTags.every(tag => book.data.tags.includes(tag));
+	});
+});
+
+// Group filtered books by status
+const inProgressBooks = $derived(filteredBooks.filter(book => book.data.status === "inProgress"));
+const todoBooks = $derived(filteredBooks.filter(book => book.data.status === "todo"));
+const doneBooks = $derived(filteredBooks.filter(book => book.data.status === "done"));
+
+// Determine which book to display in the sidebar
+// Priority: hovered book > most recently edited book from filtered results
+const displayBook = $derived(
+	hoveredBook ||
+		filteredBooks.filter(book => book.latestDate).sort((a, b) => b.latestDate!.getTime() - a.latestDate!.getTime())[0] ||
+		filteredBooks[0]
+);
+
+// Toggle tag selection
+function toggleTag(tag: string) {
+	if (selectedTags.includes(tag)) {
+		selectedTags = selectedTags.filter(t => t !== tag);
+	} else {
+		selectedTags = [...selectedTags, tag];
+	}
+}
+
+// Set hovered book
+function setHoveredBook(book: KnowledgeItem) {
+	hoveredBook = book;
+}
+
+// Clear hovered book
+function clearHoveredBook() {
+	hoveredBook = null;
+}
+
+// Format date for display
+function formatDate(date: Date): string {
+	return Time.date.locale(date, locale);
+}
+</script>
+
+<main class="flex flex-col sm:flex-row gap-8 grow">
+	<!-- Main content area with status rows -->
+	<article class="flex flex-col gap-10 grow">
+		{#if inProgressBooks.length > 0}
+			<div class="status-row">
+				<h2>{t("library.status.inProgress")}</h2>
+				<div class="books-grid">
+					{#each inProgressBooks as book (book.id)}
+						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === "book" && icons["icon-book"]}
+										{@render icons["icon-book"]()}
+									{:else if book.data.type === "video" && icons["icon-video"]}
+										{@render icons["icon-video"]()}
+									{:else if book.data.type === "course" && icons["icon-course"]}
+										{@render icons["icon-course"]()}
+									{/if}
+								</div>
+							</ProgressRing>
+							<div class="book-info">
+								<div class="book-title">{book.data.title}</div>
+								{#if book.data.author}
+									<div class="book-author">{book.data.author}</div>
+								{/if}
+								<div class="book-progress">{book.progress}%</div>
+							</div>
+						</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if todoBooks.length > 0}
+			<div class="status-row">
+				<h2>{t("library.status.todo")}</h2>
+				<div class="books-grid">
+					{#each todoBooks as book (book.id)}
+						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === "book" && icons["icon-book"]}
+										{@render icons["icon-book"]()}
+									{:else if book.data.type === "video" && icons["icon-video"]}
+										{@render icons["icon-video"]()}
+									{:else if book.data.type === "course" && icons["icon-course"]}
+										{@render icons["icon-course"]()}
+									{/if}
+								</div>
+							</ProgressRing>
+							<div class="book-info">
+								<div class="book-title">{book.data.title}</div>
+								{#if book.data.author}
+									<div class="book-author">{book.data.author}</div>
+								{/if}
+								<div class="book-progress">{book.progress}%</div>
+							</div>
+						</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if doneBooks.length > 0}
+			<div class="status-row">
+				<h2>{t("library.status.done")}</h2>
+				<div class="books-grid">
+					{#each doneBooks as book (book.id)}
+						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
+								<div class="w-full h-full flex items-center justify-center c-weak">
+									{#if book.data.type === "book" && icons["icon-book"]}
+										{@render icons["icon-book"]()}
+									{:else if book.data.type === "video" && icons["icon-video"]}
+										{@render icons["icon-video"]()}
+									{:else if book.data.type === "course" && icons["icon-course"]}
+										{@render icons["icon-course"]()}
+									{/if}
+								</div>
+							</ProgressRing>
+							<div class="book-info">
+								<div class="book-title">{book.data.title}</div>
+								{#if book.data.author}
+									<div class="book-author">{book.data.author}</div>
+								{/if}
+								<div class="book-progress">{book.progress}%</div>
+							</div>
+						</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if inProgressBooks.length === 0 && todoBooks.length === 0 && doneBooks.length === 0}
+			<div class="flex flex-col items-center justify-center py-20 c-weak">
+				{#if icons["icon-empty"]}
+					{@render icons["icon-empty"]()}
+				{/if}
+				<p class="mt-4 text-lg">
+					{selectedTags.length > 0 ? t("library.noMatches") : t("library.empty")}
+				</p>
+			</div>
+		{/if}
+	</article>
+
+	<!-- Sidebar -->
+	<aside class="sm:flex-basis-280px flex flex-col gap-8 sm:border-l sm:border-l-solid sm:pl-8">
+		<!-- Tag filter section -->
+		{#if allTags.length > 0}
+			<section>
+				<h3>{t("library.filterByTag")}</h3>
+				<div class="tag-list">
+					{#each allTags as tag (tag)}
+						<button class:selected={selectedTags.includes(tag)} onclick={() => toggleTag(tag)}>
+							{tag}
+						</button>
+					{/each}
+				</div>
+			</section>
+		{/if}
+
+		<!-- Latest activity section -->
+		{#if displayBook}
+			<section>
+				<h3>{hoveredBook ? t("library.thisReadingSession") : t("library.latestActivity")}</h3>
+				<div class="activity-card">
+					<div class="activity-info">
+						<div class="activity-title">{displayBook.data.title}</div>
+						{#if displayBook.latestDate}
+							<div class="activity-date">{formatDate(displayBook.latestDate)}</div>
+						{/if}
+						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
+					</div>
+					<div class="activity-cover">
+						<div class="cover-image" class:has-cover={displayBook.data.cover} style={displayBook.data.cover ? `background-image: url('${displayBook.data.cover}')` : ""} role="img" aria-label={displayBook.data.title}>
+							{#if !displayBook.data.cover}
+								<div class="placeholder">
+									{#if displayBook.data.type === "book" && icons["icon-book-large"]}
+										{@render icons["icon-book-large"]()}
+									{:else if displayBook.data.type === "video" && icons["icon-video-large"]}
+										{@render icons["icon-video-large"]()}
+									{:else if displayBook.data.type === "course" && icons["icon-course-large"]}
+										{@render icons["icon-course-large"]()}
+									{/if}
+								</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</section>
+		{/if}
+	</aside>
+</main>
+
 <style lang="less">
 	main {
 		border-color: var(--border-color);
@@ -187,258 +442,3 @@
 		}
 	}
 </style>
-
-<main class="flex flex-col sm:flex-row gap-8 grow">
-	<!-- Main content area with status rows -->
-	<article class="flex flex-col gap-10 grow">
-		{#if inProgressBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.inProgress")}</h2>
-				<div class="books-grid">
-					{#each inProgressBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
-							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									{#if book.data.type === "book" && icons["icon-book"]}
-										{@render icons["icon-book"]()}
-									{:else if book.data.type === "video" && icons["icon-video"]}
-										{@render icons["icon-video"]()}
-									{:else if book.data.type === "course" && icons["icon-course"]}
-										{@render icons["icon-course"]()}
-									{/if}
-								</div>
-							</ProgressRing>
-							<div class="book-info">
-								<div class="book-title">{book.data.title}</div>
-								{#if book.data.author}
-									<div class="book-author">{book.data.author}</div>
-								{/if}
-								<div class="book-progress">{book.progress}%</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if todoBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.todo")}</h2>
-				<div class="books-grid">
-					{#each todoBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
-							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									{#if book.data.type === "book" && icons["icon-book"]}
-										{@render icons["icon-book"]()}
-									{:else if book.data.type === "video" && icons["icon-video"]}
-										{@render icons["icon-video"]()}
-									{:else if book.data.type === "course" && icons["icon-course"]}
-										{@render icons["icon-course"]()}
-									{/if}
-								</div>
-							</ProgressRing>
-							<div class="book-info">
-								<div class="book-title">{book.data.title}</div>
-								{#if book.data.author}
-									<div class="book-author">{book.data.author}</div>
-								{/if}
-								<div class="book-progress">{book.progress}%</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if doneBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.done")}</h2>
-				<div class="books-grid">
-					{#each doneBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
-							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									{#if book.data.type === "book" && icons["icon-book"]}
-										{@render icons["icon-book"]()}
-									{:else if book.data.type === "video" && icons["icon-video"]}
-										{@render icons["icon-video"]()}
-									{:else if book.data.type === "course" && icons["icon-course"]}
-										{@render icons["icon-course"]()}
-									{/if}
-								</div>
-							</ProgressRing>
-							<div class="book-info">
-								<div class="book-title">{book.data.title}</div>
-								{#if book.data.author}
-									<div class="book-author">{book.data.author}</div>
-								{/if}
-								<div class="book-progress">{book.progress}%</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if inProgressBooks.length === 0 && todoBooks.length === 0 && doneBooks.length === 0}
-			<div class="flex flex-col items-center justify-center py-20 c-weak">
-				{#if icons["icon-empty"]}
-					{@render icons["icon-empty"]()}
-				{/if}
-				<p class="mt-4 text-lg">
-					{selectedTags.length > 0 ? t("library.noMatches") : t("library.empty")}
-				</p>
-			</div>
-		{/if}
-	</article>
-
-	<!-- Sidebar -->
-	<aside class="sm:flex-basis-280px flex flex-col gap-8 sm:border-l sm:border-l-solid sm:pl-8">
-		<!-- Tag filter section -->
-		{#if allTags.length > 0}
-			<section>
-				<h3>{t("library.filterByTag")}</h3>
-				<div class="tag-list">
-					{#each allTags as tag (tag)}
-						<button class:selected={selectedTags.includes(tag)} onclick={() => toggleTag(tag)}>
-							{tag}
-						</button>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Latest activity section -->
-		{#if displayBook}
-			<section>
-				<h3>{hoveredBook ? t("library.thisReadingSession") : t("library.latestActivity")}</h3>
-				<div class="activity-card">
-					<div class="activity-info">
-						<div class="activity-title">{displayBook.data.title}</div>
-						{#if displayBook.latestDate}
-							<div class="activity-date">{formatDate(displayBook.latestDate)}</div>
-						{/if}
-						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
-					</div>
-					<div class="activity-cover">
-						<div class="cover-image" class:has-cover={displayBook.data.cover} style={displayBook.data.cover ? `background-image: url('${displayBook.data.cover}')` : ""} role="img" aria-label={displayBook.data.title}>
-							{#if !displayBook.data.cover}
-								<div class="placeholder">
-									{#if displayBook.data.type === "book" && icons["icon-book-large"]}
-										{@render icons["icon-book-large"]()}
-									{:else if displayBook.data.type === "video" && icons["icon-video-large"]}
-										{@render icons["icon-video-large"]()}
-									{:else if displayBook.data.type === "course" && icons["icon-course-large"]}
-										{@render icons["icon-course-large"]()}
-									{/if}
-								</div>
-							{/if}
-						</div>
-					</div>
-				</div>
-			</section>
-		{/if}
-	</aside>
-</main>
-
-<script lang="ts">
-import { getRelativeLocaleUrl } from "astro:i18n";
-import ProgressRing from "$components/ProgressRing.svelte";
-import Time from "$utils/time";
-import i18nit from "$i18n";
-
-type KnowledgeItem = {
-	id: string;
-	data: any;
-	body: string;
-	progress: number;
-	excerpt: string;
-	latestDate: Date | null;
-};
-
-import type { Snippet } from "svelte";
-
-type Icons = {
-	"icon-book"?: Snippet;
-	"icon-video"?: Snippet;
-	"icon-course"?: Snippet;
-	"icon-book-large"?: Snippet;
-	"icon-video-large"?: Snippet;
-	"icon-course-large"?: Snippet;
-	"icon-empty"?: Snippet;
-};
-
-let {
-	locale,
-	books,
-	allTags,
-	theme = "plain",
-	...icons
-}: {
-	locale: string;
-	books: KnowledgeItem[];
-	allTags: string[];
-	theme?: string;
-} & Icons = $props();
-
-const t = i18nit(locale);
-
-// State for tag filtering
-let selectedTags = $state<string[]>([]);
-
-// State for hover interaction
-let hoveredBook = $state<KnowledgeItem | null>(null);
-
-// Filter books by selected tags
-const filteredBooks = $derived.by(() => {
-	if (selectedTags.length === 0) {
-		return books;
-	}
-
-	return books.filter(book => {
-		if (!book.data.tags || book.data.tags.length === 0) {
-			return false;
-		}
-		// Check if book contains ALL selected tags (AND logic, same as Note/Jotting)
-		return selectedTags.every(tag => book.data.tags.includes(tag));
-	});
-});
-
-// Group filtered books by status
-const inProgressBooks = $derived(filteredBooks.filter(book => book.data.status === "inProgress"));
-const todoBooks = $derived(filteredBooks.filter(book => book.data.status === "todo"));
-const doneBooks = $derived(filteredBooks.filter(book => book.data.status === "done"));
-
-// Determine which book to display in the sidebar
-// Priority: hovered book > most recently edited book from filtered results
-const displayBook = $derived(
-	hoveredBook ||
-		filteredBooks.filter(book => book.latestDate).sort((a, b) => b.latestDate!.getTime() - a.latestDate!.getTime())[0] ||
-		filteredBooks[0]
-);
-
-// Toggle tag selection
-function toggleTag(tag: string) {
-	if (selectedTags.includes(tag)) {
-		selectedTags = selectedTags.filter(t => t !== tag);
-	} else {
-		selectedTags = [...selectedTags, tag];
-	}
-}
-
-// Set hovered book
-function setHoveredBook(book: KnowledgeItem) {
-	hoveredBook = book;
-}
-
-// Clear hovered book
-function clearHoveredBook() {
-	hoveredBook = null;
-}
-
-// Format date for display
-function formatDate(date: Date): string {
-	return Time.date(date);
-}
-</script>
