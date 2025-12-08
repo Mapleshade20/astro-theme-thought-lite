@@ -93,11 +93,6 @@ function setHoveredBook(book: KnowledgeItem) {
 function clearHoveredBook() {
 	hoveredBook = null;
 }
-
-// Format date for display
-function formatDate(date: Date): string {
-	return Time.date.locale(date, locale);
-}
 </script>
 
 <main class="flex flex-col sm:flex-row gap-8 grow">
@@ -229,7 +224,7 @@ function formatDate(date: Date): string {
 					<div class="activity-info">
 						<div class="activity-title">{displayBook.data.title}</div>
 						{#if displayBook.latestDate}
-							<div class="activity-date">{formatDate(displayBook.latestDate)}</div>
+							<time datetime={displayBook.latestDate.toISOString()} class="activity-date">{Time.date.locale(displayBook.latestDate, locale)}</time>
 						{/if}
 						<div class="activity-excerpt">{displayBook.excerpt || t("library.noExcerpt")}</div>
 					</div>

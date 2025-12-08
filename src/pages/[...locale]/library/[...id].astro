@@ -79,76 +79,69 @@ const statusLabel = {
 
 <Base title={item.data.title} {locale} description={item.data.description} article={item.data.dates?.start ? { timestamp: item.data.dates.start, tags: item.data.tags } : undefined}>
 	<main class="flex flex-col gap-6">
-		<header class="flex flex-col gap-4">
-			<div class="flex gap-4">
-				<!-- Title section -->
-				<div class="flex flex-col gap-4 flex-grow">
-					<div class="flex flex-col gap-2">
-						<h1 class="text-3xl">{item.data.title}</h1>
-						{item.data.author && <p class="text-base c-remark">{item.data.author}</p>}
+		<header class="block flow-root">
+			{
+				coverImage && (
+					<div class="float-right w-auto max-w-[15%] ml-4 mb-2">
+						<Image src={coverImage} alt={item.data.title} class="rounded-lg shadow-md object-cover w-full h-auto" width={200} inferSize densities={[1.5, 2]} />
 					</div>
+				)
+			}
 
-					<!-- Metadata section -->
-					<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap children:(flex items-center gap-1 text-sm c-remark)">
-						<span>
-							<Icon name="lucide:activity" />
-							{statusLabel[item.data.status]}
-							{progress > 0 && `(${progress}%)`}
-						</span>
-						{
-							item.data.dates?.start && (
-								<time title={Time.date.locale(item.data.dates.start, locale)}>
-									<Icon name="lucide:calendar-arrow-down" />
-									{t("library.dates.startedOn")} {Time.date.locale(item.data.dates.start, locale)}
-								</time>
-							)
-						}
-						{
-							item.data.dates?.finish && (
-								<time title={Time.date.locale(item.data.dates.finish, locale)}>
-									<Icon name="lucide:calendar-check" />
-									{t("library.dates.finishedOn")} {Time.date.locale(item.data.dates.finish, locale)}
-								</time>
-							)
-						}
-						{
-							frontmatter.words && (
-								<span>
-									<Icon name="lucide:pilcrow" />
-									{t("read.words", { words: frontmatter.words })}
-								</span>
-							)
-						}
-						<span><Icon name="lucide:eye" /><Fragment set:html={t("read.views", { views: `<span id="vercount_value_page_pv">-</span>` })} /></span>
-						{
-							item.data.dates?.lastEdited &&
-								(() => {
-									const agoData = Time.ago(item.data.dates.lastEdited);
-									return (
-										<time title={Time.date.locale(item.data.dates.lastEdited, locale)}>
-											<Icon name="lucide:clock" />
-											{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
-										</time>
-									);
-								})()
-						}
-					</div>
+			<div class="flex flex-col gap-2 mb-4">
+				<h1 class="text-3xl">{item.data.title}</h1>
+				{item.data.author && <p class="text-base c-remark">{item.data.author}</p>}
+			</div>
 
-					{item.data.description && <p class="text-base c-remark border-l-2 border-l-solid border-l-primary pl-3">{item.data.description}</p>}
-				</div>
-
+			<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap children:(flex items-center gap-1 text-sm c-remark) mb-4">
+				<span>
+					<Icon name="lucide:activity" />
+					{statusLabel[item.data.status]}
+					{progress > 0 && `(${progress}%)`}
+				</span>
 				{
-					coverImage && (
-						<div class="flex-shrink-0 hidden sm:block self-stretch relative aspect-[3/4]">
-							<Image src={coverImage} alt={item.data.title} class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" width={200} inferSize densities={[1.5, 2]} />
-						</div>
+					item.data.dates?.start && (
+						<time title={Time.date.locale(item.data.dates.start, locale)}>
+							<Icon name="lucide:calendar-arrow-down" />
+							{t("library.dates.startedOn")} {Time.date.locale(item.data.dates.start, locale)}
+						</time>
 					)
+				}
+				{
+					item.data.dates?.finish && (
+						<time title={Time.date.locale(item.data.dates.finish, locale)}>
+							<Icon name="lucide:calendar-check" />
+							{t("library.dates.finishedOn")} {Time.date.locale(item.data.dates.finish, locale)}
+						</time>
+					)
+				}
+				{
+					frontmatter.words && (
+						<span>
+							<Icon name="lucide:pilcrow" />
+							{t("read.words", { words: frontmatter.words })}
+						</span>
+					)
+				}
+				<span><Icon name="lucide:eye" /><Fragment set:html={t("read.views", { views: `<span id="vercount_value_page_pv">-</span>` })} /></span>
+				{
+					item.data.dates?.lastEdited &&
+						(() => {
+							const agoData = Time.ago(item.data.dates.lastEdited);
+							return (
+								<time title={Time.date.locale(item.data.dates.lastEdited, locale)}>
+									<Icon name="lucide:clock" />
+									{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
+								</time>
+							);
+						})()
 				}
 			</div>
 
-			<hr class="b-b b-b-solid b-weak" />
-		</header>
+			{item.data.description && <p class="text-base c-remark border-l-2 border-l-solid border-l-primary pl-3 mb-4">{item.data.description}</p>}
 
+			<hr class="b-b b-b-solid b-weak clear-both" />
+		</header>
 		<Sensitive {locale} back="/library" sensitive={item.data.sensitive} client:load>
 			<div class="flex gap-5">
 				<section id="markdown-content" class="markdown"><Content /></section>

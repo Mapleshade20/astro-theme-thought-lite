@@ -16,6 +16,9 @@ export function extractExcerpt(content: string, length: number = 150): string {
 	// Remove footnote definitions (e.g., [^1]: footnote text)
 	cleaned = cleaned.replace(/^\[\^[^\]]+\]:\s+.+$/gm, "");
 
+	// Remove spoiler content (e.g., !!spoiler text!!)
+	cleaned = cleaned.replace(/!!(?![\s!])([\s\S]*?)(?<![\s!])!!/g, "");
+
 	// Remove complete heading lines (including the entire line)
 	cleaned = cleaned.replace(/^#+\s+.+$/gm, "");
 
