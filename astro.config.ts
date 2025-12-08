@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import { visualizer } from "rollup-plugin-visualizer";
 import yaml from "@rollup/plugin-yaml";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -111,12 +112,40 @@ export default defineConfig({
 		}
 	},
 	vite: {
+		build: {
+			rollupOptions: {
+				output: {
+					manualChunks(id) {
+						if (id.includes("node_modules")) {
+							if (id.includes("swup")) return "vendor-swup";
+
+							if (id.includes("svelte") || id.includes("astro")) return "vendor-core";
+
+							return "vendor-utils";
+						}
+
+						if (id.includes("components") || id.includes("layouts")) {
+							const globalComponents = ["Navigator", "Menu", "ThemeSwitcher", "Footer", "Icon", "Base", "App"];
+							if (globalComponents.some(kw => id.includes(kw))) {
+								return "frame";
+							}
+						}
+					}
+				}
+			}
+		},
 		// Workaround for https://github.com/withastro/astro/issues/14692
 		optimizeDeps: {
 			include: ["picocolors"]
 		},
-		// @ts-expect-error
-		plugins: [yaml()]
+		plugins: [
+			// @ts-expect-error
+			yaml(), // @ts-expect-error
+			visualizer({
+				emitFile: true,
+				filename: "stats.html"
+			})
+		]
 	},
 	integrations: [
 		svelte(),
