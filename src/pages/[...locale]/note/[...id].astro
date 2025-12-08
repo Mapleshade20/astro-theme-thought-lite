@@ -8,6 +8,7 @@ import Icon from "$components/Icon.astro";
 import TOC from "$components/TOC.astro";
 import Position from "$components/Position.astro";
 import Sensitive from "$components/Sensitive.svelte";
+import VerCountLoader from "$components/VerCountLoader.astro";
 import i18nit from "$i18n";
 
 export async function getStaticPaths() {
@@ -65,6 +66,7 @@ const t = i18nit(locale);
 ---
 
 <Base title={note.data.title} {locale} description={note.data.description} article={{ timestamp: note.data.timestamp, section: note.data.series, tags: note.data.tags }}>
+	<VerCountLoader slot="head" />
 	<main class="flex flex-col gap-6">
 		<header class="flex flex-col gap-4">
 			<div class="flex flex-row gap-3 children:(flex items-center gap-1 text-xs c-weak)">

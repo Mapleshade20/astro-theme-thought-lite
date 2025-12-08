@@ -11,6 +11,7 @@ import Position from "$components/Position.astro";
 import Sensitive from "$components/Sensitive.svelte";
 import i18nit from "$i18n";
 import { Image } from "astro:assets";
+import VerCountLoader from "$components/VerCountLoader.astro";
 
 export async function getStaticPaths() {
 	// Get all knowledge items excluding drafts
@@ -78,6 +79,7 @@ const statusLabel = {
 ---
 
 <Base title={item.data.title} {locale} description={item.data.description} article={item.data.dates?.start ? { timestamp: item.data.dates.start, tags: item.data.tags } : undefined}>
+	<VerCountLoader slot="head" />
 	<main class="flex flex-col gap-6">
 		<header class="block flow-root">
 			{

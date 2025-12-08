@@ -5,6 +5,7 @@ import Time from "$utils/time";
 import Base from "$layouts/Base.astro";
 import Icon from "$components/Icon.astro";
 import Position from "$components/Position.astro";
+import VerCountLoader from "$components/VerCountLoader.astro";
 import Sensitive from "$components/Sensitive.svelte";
 import i18nit from "$i18n";
 
@@ -40,6 +41,7 @@ const t = i18nit(locale);
 ---
 
 <Base title={jotting.data.title} {locale} description={jotting.data.description} article={{ timestamp: jotting.data.timestamp, tags: jotting.data.tags }}>
+	<VerCountLoader slot="head" />
 	<main class="flex flex-col gap-6">
 		<header class="flex flex-col gap-4">
 			<div class="flex flex-row gap-3 children:(flex items-center gap-1 text-xs c-weak)">

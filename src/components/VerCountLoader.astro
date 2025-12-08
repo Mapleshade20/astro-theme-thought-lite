@@ -1,0 +1,70 @@
+<script is:inline>
+	(() => {
+		if (window.__vercountHandlerInstalled) return;
+		window.__vercountHandlerInstalled = true;
+
+		const run = async () => {
+			// Check if we are on a page that needs counting
+			// We check for the existence of the value element
+			const pvEl = document.getElementById("vercount_value_page_pv") || document.getElementById("busuanzi_value_page_pv");
+			if (!pvEl) return;
+
+			const url = window.location.href;
+			const apiUrl = "https://events.vercount.one/api/v2/log";
+			const cacheKey = "visitorCountData";
+
+			const updateDOM = (data) => {
+				["site_pv", "page_pv", "site_uv"].forEach((key) => {
+					const value = data[key] || 0;
+					// Update elements
+					const id = `vercount_value_${key}`;
+					const el = document.getElementById(id);
+					if (el) el.textContent = value;
+
+					const bId = `busuanzi_value_${key}`;
+					const bEl = document.getElementById(bId);
+					if (bEl) bEl.textContent = value;
+
+					// Show containers
+					const cId = `vercount_container_${key}`;
+					const cEl = document.getElementById(cId);
+					if (cEl) cEl.style.display = "inline";
+
+					const bcId = `busuanzi_container_${key}`;
+					const bcEl = document.getElementById(bcId);
+					if (bcEl) bcEl.style.display = "inline";
+				});
+			};
+
+			// Load from cache
+			try {
+				const cached = localStorage.getItem(cacheKey);
+				if (cached) {
+					updateDOM(JSON.parse(cached));
+				}
+			} catch (e) {}
+
+			// Fetch
+			try {
+				const response = await fetch(apiUrl, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ url }),
+				});
+
+				if (response.ok) {
+					const result = await response.json();
+					const data = result.status === "success" && result.data ? result.data : (result.data || result);
+					updateDOM(data);
+					try {
+						localStorage.setItem(cacheKey, JSON.stringify(data));
+					} catch (e) {}
+				}
+			} catch (e) {
+				console.error("VerCount error:", e);
+			}
+		};
+
+		document.addEventListener("astro:page-load", run);
+	})();
+</script>
