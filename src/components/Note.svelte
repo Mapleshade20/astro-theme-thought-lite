@@ -112,7 +112,7 @@ onMount(() => {
 <main class="flex flex-col-reverse sm:flex-row gap-10 grow">
 	<article class="flex flex-col gap-12 grow">
 		{#each list as note (note.id)}
-			<section animate:flip={{ duration: 150 }} class="flex flex-col sm:flex-row gap-0.5">
+			<section animate:flip={{ duration: 150 }} transition:fade={{ duration: 150 }} class="flex flex-col sm:flex-row gap-0.5">
 				<div class="flex flex-col gap-0.5 sm:w-80%">
 					<time datetime={note.data.timestamp.toISOString()} class="text-xs c-weak">{Time.date.locale(note.data.timestamp, locale)}</time>
 					<div class="flex gap-1 items-center text-lg c-strong">

@@ -85,7 +85,7 @@ onMount(() => {
 	<article class="flex flex-col grow">
 		<header class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
 			{#each list as jotting (jotting.id)}
-				<section animate:flip={{ duration: 150 }} class="flex flex-col justify-center b-b b-b-dashed b-b-weak pb-1 gap-0.5">
+				<section animate:flip={{ duration: 150 }} transition:fade={{ duration: 150 }} class="flex flex-col justify-center b-b b-b-dashed b-b-weak pb-1 gap-0.5">
 					<time datetime={jotting.data.timestamp.toISOString()} class="text-xs c-weak">{Time.date.locale(jotting.data.timestamp, locale)}</time>
 					<span class="flex items-center gap-1 c-strong text-lg">
 						{#if jotting.data.top > 0}<span>{@render top()}</span>{/if}

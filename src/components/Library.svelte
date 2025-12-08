@@ -1,6 +1,8 @@
 <script lang="ts">
 import { getRelativeLocaleUrl } from "astro:i18n";
 import ProgressRing from "$components/ProgressRing.svelte";
+import { flip } from "svelte/animate";
+import { fade } from "svelte/transition";
 import { monolocale } from "$config";
 import Time from "$utils/time";
 import i18nit from "$i18n";
@@ -67,6 +69,14 @@ const inProgressBooks = $derived(filteredBooks.filter(book => book.data.status =
 const todoBooks = $derived(filteredBooks.filter(book => book.data.status === "todo"));
 const doneBooks = $derived(filteredBooks.filter(book => book.data.status === "done"));
 
+const statusGroups = $derived(
+	[
+		{ key: "inProgress", label: t("library.status.inProgress"), items: inProgressBooks },
+		{ key: "todo", label: t("library.status.todo"), items: todoBooks },
+		{ key: "done", label: t("library.status.done"), items: doneBooks }
+	].filter(group => group.items.length > 0)
+);
+
 // Determine which book to display in the sidebar
 // Priority: hovered book > most recently edited book from filtered results
 const displayBook = $derived(
@@ -98,12 +108,18 @@ function clearHoveredBook() {
 <main class="flex flex-col sm:flex-row gap-8 grow">
 	<!-- Main content area with status rows -->
 	<article class="flex flex-col gap-10 grow">
-		{#if inProgressBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.inProgress")}</h2>
+		{#each statusGroups as group (group.key)}
+			<div class="status-row" transition:fade={{ duration: 150 }} animate:flip={{ duration: 150 }}>
+				<h2>{group.label}</h2>
 				<div class="books-grid">
-					{#each inProgressBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
+					{#each group.items as book (book.id)}
+						<a
+							href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)}
+							class="book-card"
+							onmouseenter={() => setHoveredBook(book)}
+							onmouseleave={() => clearHoveredBook()}
+							animate:flip={{ duration: 150 }}
+						>
 							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
 								<div class="w-full h-full flex items-center justify-center c-weak">
 									{#if book.data.type === "book" && icons["icon-book"]}
@@ -126,69 +142,9 @@ function clearHoveredBook() {
 					{/each}
 				</div>
 			</div>
-		{/if}
+		{/each}
 
-		{#if todoBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.todo")}</h2>
-				<div class="books-grid">
-					{#each todoBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
-							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									{#if book.data.type === "book" && icons["icon-book"]}
-										{@render icons["icon-book"]()}
-									{:else if book.data.type === "video" && icons["icon-video"]}
-										{@render icons["icon-video"]()}
-									{:else if book.data.type === "course" && icons["icon-course"]}
-										{@render icons["icon-course"]()}
-									{/if}
-								</div>
-							</ProgressRing>
-							<div class="book-info">
-								<div class="book-title">{book.data.title}</div>
-								{#if book.data.author}
-									<div class="book-author">{book.data.author}</div>
-								{/if}
-								<div class="book-progress">{book.progress}%</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if doneBooks.length > 0}
-			<div class="status-row">
-				<h2>{t("library.status.done")}</h2>
-				<div class="books-grid">
-					{#each doneBooks as book (book.id)}
-						<a href={getRelativeLocaleUrl(locale, `/library/${monolocale ? book.id : book.id.split("/").slice(1).join("/")}`)} class="book-card" onmouseenter={() => setHoveredBook(book)} onmouseleave={() => clearHoveredBook()}>
-							<ProgressRing status={book.data.status} progress={book.progress} size={100} {theme}>
-								<div class="w-full h-full flex items-center justify-center c-weak">
-									{#if book.data.type === "book" && icons["icon-book"]}
-										{@render icons["icon-book"]()}
-									{:else if book.data.type === "video" && icons["icon-video"]}
-										{@render icons["icon-video"]()}
-									{:else if book.data.type === "course" && icons["icon-course"]}
-										{@render icons["icon-course"]()}
-									{/if}
-								</div>
-							</ProgressRing>
-							<div class="book-info">
-								<div class="book-title">{book.data.title}</div>
-								{#if book.data.author}
-									<div class="book-author">{book.data.author}</div>
-								{/if}
-								<div class="book-progress">{book.progress}%</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if inProgressBooks.length === 0 && todoBooks.length === 0 && doneBooks.length === 0}
+		{#if statusGroups.length === 0}
 			<div class="flex flex-col items-center justify-center py-20 c-weak">
 				{#if icons["icon-empty"]}
 					{@render icons["icon-empty"]()}
@@ -355,9 +311,11 @@ function clearHoveredBook() {
 						background-color: var(--primary-color);
 					}
 
-					&:hover {
-						color: var(--background-color);
-						background-color: var(--primary-color);
+					@media (min-width: 640px) {
+						&:hover {
+							color: var(--background-color);
+							background-color: var(--primary-color);
+						}
 					}
 				}
 			}
