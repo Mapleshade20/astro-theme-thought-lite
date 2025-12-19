@@ -25,10 +25,30 @@ const title = config.title;
 	// Add zoom effect to images within markdown content
 	window.zoom = () => zoom(".markdown img:not([data-nozoom])", { background: "#00000044" });
 
+	function handleHash() {
+		const hash = window.location.hash;
+		if (!hash) return;
+
+		const id = hash.substring(1);
+		const target = document.getElementById(decodeURIComponent(id));
+
+		if (target) {
+			target.scrollIntoView({ block: "center", behavior: "smooth" });
+
+			if (id.includes("fnref") || id.includes("ref")) {
+				target.classList.add("highlight-target");
+				setTimeout(() => target.classList.remove("highlight-target"), 1000);
+			}
+		}
+	}
+
 	// Page initialization function
 	function initialize() {
 		localizeTimes();
 		window.zoom();
+		if (window.location.hash) {
+			setTimeout(handleHash, 300);
+		}
 	}
 
 	// Execute initialization on first load
@@ -36,6 +56,22 @@ const title = config.title;
 
 	// Listen for page load event and re-initialize on page transitions
 	document.addEventListener("astro:page-load", initialize);
+
+	window.addEventListener("hashchange", handleHash);
+
+	document.addEventListener("click", (e) => {
+		const target = e.target;
+		if (!(target instanceof Element)) return;
+		const anchor = target.closest("a");
+		if (!anchor) return;
+
+		const href = anchor.getAttribute("href");
+		if (href && href.startsWith("#")) {
+			e.preventDefault();
+			history.pushState(null, "", href);
+			handleHash();
+		}
+	});
 </script>
 
 <App {title} {subtitle} {description} {article} author={config.author.name}>

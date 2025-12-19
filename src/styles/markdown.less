@@ -292,6 +292,20 @@
 		}
 	}
 
+	.highlight-target {
+		animation: highlight 3s ease-out;
+	}
+
+	@keyframes highlight {
+		0% {
+			background-color: var(--selection-color);
+		}
+
+		100% {
+			background-color: transparent;
+		}
+	}
+
 	.footnotes {
 		margin-top: 2.5em;
 		border-top: 4px dotted var(--weak-color);
