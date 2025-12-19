@@ -130,11 +130,44 @@ const statusLabel = {
 					item.data.dates?.lastEdited &&
 						(() => {
 							const agoData = Time.ago(item.data.dates.lastEdited);
+							const agoTranslations = {
+								year: t("library.dates.ago.year", { count: "{{count}}" }),
+								years: t("library.dates.ago.years", { count: "{{count}}" }),
+								month: t("library.dates.ago.month", { count: "{{count}}" }),
+								months: t("library.dates.ago.months", { count: "{{count}}" }),
+								day: t("library.dates.ago.day", { count: "{{count}}" }),
+								days: t("library.dates.ago.days", { count: "{{count}}" }),
+								today: t("library.dates.ago.today", { count: "{{count}}" }),
+							};
 							return (
-								<time title={Time.date.locale(item.data.dates.lastEdited, locale)}>
-									<Icon name="lucide:clock" />
-									{t("library.dates.lastEdited")} {t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}
-								</time>
+								<>
+									<time
+										data-last-edited={item.data.dates.lastEdited.toISOString()}
+										data-ago-translations={JSON.stringify(agoTranslations)}
+										title={Time.date.locale(item.data.dates.lastEdited, locale)}
+									>
+										<Icon name="lucide:clock" />
+										{t("library.dates.lastEdited")}{" "}
+										<span class="ago-text">{t(`library.dates.ago.${agoData.unit}`, { count: agoData.count })}</span>
+									</time>
+									<script>
+										import Time from "$utils/time";
+										const timeElement = document.querySelector<HTMLElement>("time[data-last-edited]");
+										if (timeElement) {
+											const lastEdited = timeElement.dataset.lastEdited;
+											const translations = JSON.parse(timeElement.dataset.agoTranslations || "{}");
+											if (lastEdited && translations) {
+												const agoData = Time.ago(new Date(lastEdited));
+												const template = translations[agoData.unit];
+												if (template) {
+													const text = template.replace("{{count}}", agoData.count);
+													const span = timeElement.querySelector(".ago-text");
+													if (span) span.textContent = text;
+												}
+											}
+										}
+									</script>
+								</>
 							);
 						})()
 				}
