@@ -95,12 +95,9 @@ const jottingWords = (await Promise.all(jottings.map(async jotting => (await ren
 );
 
 const knowledge = await getCollection("knowledge", item => {
-	// Extract language from the file path structure
-	const [language] = item.id.split("/");
-
-	// Filter criteria: must be published and match locale
+	// Filter by publication status and locale
 	let published = !item.data.draft;
-	let localed = language === locale;
+	let localed = monolocale || item.id.split("/")[0] === locale;
 
 	return published && localed;
 });
